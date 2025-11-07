@@ -524,65 +524,115 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 24px 24px 20px;
             border-bottom: 1px solid var(--border-primary);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent);
+            position: relative;
+        }
+
+        .model-panel-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-secondary), transparent);
+            opacity: 0.3;
         }
 
         .model-panel-header h3 {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-primary);
             letter-spacing: 2px;
             text-transform: uppercase;
             margin: 0;
+            font-weight: 600;
+            opacity: 0.9;
         }
 
         .close-panel {
             width: 32px;
             height: 32px;
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
             border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 16px;
+            border-radius: 10px;
+            color: var(--text-tertiary);
+            font-size: 18px;
+            font-weight: 300;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .close-panel:hover {
-            background: var(--bg-elevated);
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
             color: var(--text-primary);
+            border-color: var(--border-secondary);
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .close-panel:active {
+            transform: scale(0.95);
         }
 
         .model-categories {
             display: flex;
-            gap: 8px;
-            padding: 12px 20px;
-            background: var(--bg-tertiary);
+            gap: 4px;
+            padding: 16px 20px 12px;
+            background: linear-gradient(to bottom, var(--bg-secondary), var(--bg-tertiary));
             border-bottom: 1px solid var(--border-primary);
             overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .model-categories::-webkit-scrollbar {
+            display: none;
         }
 
         .category-tab {
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--text-tertiary);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-quaternary);
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .category-tab:hover:not(.active) {
+            background: var(--bg-card);
+            border-color: var(--border-primary);
+            color: var(--text-tertiary);
         }
 
         .category-tab.active {
-            background: var(--bg-elevated);
-            border-color: var(--border-active);
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+            border-color: var(--border-secondary);
             color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 2px;
+            background: var(--text-tertiary);
+            border-radius: 999px;
         }
 
         .models-grid {
@@ -597,16 +647,35 @@
         }
 
         .model-option {
-            background: var(--bg-card);
+            background: linear-gradient(135deg, var(--bg-card), rgba(255,255,255,0.01));
             border: 1px solid var(--border-primary);
-            border-radius: 10px;
-            padding: 12px;
-            transition: all 0.2s;
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transition: left 0.5s;
         }
 
         .model-option:hover {
             border-color: var(--border-secondary);
-            background: var(--bg-elevated);
+            background: linear-gradient(135deg, var(--bg-elevated), rgba(255,255,255,0.02));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .model-option:hover::before {
+            left: 100%;
         }
 
         .model-header {
@@ -614,11 +683,14 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 8px;
+            position: relative;
         }
 
         .model-icon {
-            font-size: 24px;
+            font-size: 26px;
             color: var(--text-secondary);
+            filter: brightness(1.1);
+            flex-shrink: 0;
         }
 
         .model-name {
@@ -633,6 +705,8 @@
             font-family: 'Inter', sans-serif;
             font-size: 10px;
             color: var(--text-quaternary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .model-desc {
@@ -640,49 +714,162 @@
             font-size: 11px;
             color: var(--text-tertiary);
             line-height: 1.4;
+            margin-left: 38px;
         }
 
-        .model-option input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+        /* Quantity control styling */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin-left: auto;
-            accent-color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-tertiary), rgba(0,0,0,0.3));
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 3px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .qty-btn {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-tertiary);
+            font-size: 18px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .qty-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-secondary));
+            border-color: var(--border-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .qty-btn:active:not(:disabled) {
+            transform: scale(0.95);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .qty-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            background: var(--bg-tertiary);
+        }
+
+        .qty-btn.minus {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .qty-btn.plus {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .qty-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 24px;
+            text-align: center;
+            padding: 0 4px;
+            background: rgba(255,255,255,0.02);
+            border-left: 1px solid var(--border-primary);
+            border-right: 1px solid var(--border-primary);
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .model-panel-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
+            padding: 18px 24px;
             border-top: 1px solid var(--border-primary);
-            background: var(--bg-tertiary);
+            background: linear-gradient(to top, var(--bg-secondary), var(--bg-tertiary));
+            position: relative;
+        }
+
+        .model-panel-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-secondary), transparent);
+            opacity: 0.3;
         }
 
         .selection-count {
             font-family: 'Inter', sans-serif;
             font-size: 11px;
             color: var(--text-tertiary);
+            background: rgba(0,0,0,0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .apply-models-btn {
-            padding: 8px 20px;
-            background: var(--bg-elevated);
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
             border: 1px solid var(--border-secondary);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--text-primary);
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
             font-weight: 600;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .apply-models-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
         }
 
         .apply-models-btn:hover {
-            background: linear-gradient(135deg, var(--text-secondary) 0%, var(--text-primary) 100%);
+            background: linear-gradient(135deg, var(--text-secondary), rgba(228,228,228,0.9));
             color: var(--bg-primary);
             border-color: transparent;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .apply-models-btn:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .apply-models-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .chat-input-container {
@@ -1489,256 +1676,378 @@
                     </div>
 
                     <div class="model-categories">
-                        <div class="category-tab active" onclick="switchCategory('flagship')">Flagship</div>
-                        <div class="category-tab" onclick="switchCategory('thinking')">Thinking</div>
-                        <div class="category-tab" onclick="switchCategory('efficient')">Balanced</div>
-                        <div class="category-tab" onclick="switchCategory('fast')">Fast</div>
-                        <div class="category-tab" onclick="switchCategory('specialized')">Specialized</div>
+                        <div class="category-tab active" onclick="switchProvider('all')">All Models</div>
+                        <div class="category-tab" onclick="switchProvider('openai')">OpenAI</div>
+                        <div class="category-tab" onclick="switchProvider('anthropic')">Anthropic</div>
+                        <div class="category-tab" onclick="switchProvider('google')">Google</div>
+                        <div class="category-tab" onclick="switchProvider('moonshot')">Moonshot</div>
+                        <div class="category-tab" onclick="switchProvider('meta')">Meta</div>
+                        <div class="category-tab" onclick="switchProvider('mistral')">Mistral</div>
                     </div>
 
                     <div class="models-grid" id="models-grid">
-                        <!-- Flagship Models -->
-                        <div class="model-category" data-category="flagship">
-                            <div class="model-option" data-id="gpt-5">
+                        <!-- All Models -->
+                        <div class="model-category" data-provider="all">
+                            <!-- OpenAI Models -->
+                            <div class="model-option" data-id="gpt-5" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">◎</span>
                                     <div>
                                         <div class="model-name">GPT-5</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
-                                    <input type="checkbox" checked>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gpt-5', -1)">−</button>
+                                        <span class="qty-value" data-model="gpt-5">1</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gpt-5', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">State-of-the-art reasoning • 272K context</div>
                             </div>
 
-                            <div class="model-option" data-id="claude-opus-4.1">
-                                <div class="model-header">
-                                    <span class="model-icon">⬢</span>
-                                    <div>
-                                        <div class="model-name">Claude Opus 4.1</div>
-                                        <div class="model-provider">Anthropic</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Complex reasoning • 200K context</div>
-                            </div>
-
-                            <div class="model-option" data-id="llama-4-maverick">
-                                <div class="model-header">
-                                    <span class="model-icon">⬟</span>
-                                    <div>
-                                        <div class="model-name">Llama 4 Maverick</div>
-                                        <div class="model-provider">Meta</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">400B MoE • 1M context</div>
-                            </div>
-
-                            <div class="model-option" data-id="mistral-large-2407">
-                                <div class="model-header">
-                                    <span class="model-icon">✦</span>
-                                    <div>
-                                        <div class="model-name">Mistral Large 2</div>
-                                        <div class="model-provider">Mistral</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">123B dense • Strong reasoning</div>
-                            </div>
-                        </div>
-
-                        <!-- Thinking Models -->
-                        <div class="model-category" data-category="thinking" style="display:none;">
-                            <div class="model-option" data-id="gemini-2.5-pro">
-                                <div class="model-header">
-                                    <span class="model-icon">◆</span>
-                                    <div>
-                                        <div class="model-name">Gemini 2.5 Pro</div>
-                                        <div class="model-provider">Google</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Advanced thinking • 1M context</div>
-                            </div>
-
-                            <div class="model-option" data-id="kimi-k2-thinking">
-                                <div class="model-header">
-                                    <span class="model-icon">⧈</span>
-                                    <div>
-                                        <div class="model-name">Kimi K2 Thinking</div>
-                                        <div class="model-provider">Moonshot</div>
-                                    </div>
-                                    <input type="checkbox" checked>
-                                </div>
-                                <div class="model-desc">200+ tool calls • Open source</div>
-                            </div>
-                        </div>
-
-                        <!-- Efficient Models -->
-                        <div class="model-category" data-category="efficient" style="display:none;">
-                            <div class="model-option" data-id="claude-sonnet-4.5">
-                                <div class="model-header">
-                                    <span class="model-icon">⬡</span>
-                                    <div>
-                                        <div class="model-name">Claude Sonnet 4.5</div>
-                                        <div class="model-provider">Anthropic</div>
-                                    </div>
-                                    <input type="checkbox" checked>
-                                </div>
-                                <div class="model-desc">Balanced performance • 200K context</div>
-                            </div>
-
-                            <div class="model-option" data-id="gemini-2.5-flash">
-                                <div class="model-header">
-                                    <span class="model-icon">◇</span>
-                                    <div>
-                                        <div class="model-name">Gemini 2.5 Flash</div>
-                                        <div class="model-provider">Google</div>
-                                    </div>
-                                    <input type="checkbox" checked>
-                                </div>
-                                <div class="model-desc">Low latency thinking • 1M context</div>
-                            </div>
-
-                            <div class="model-option" data-id="gpt-5-mini">
+                            <div class="model-option" data-id="gpt-5-mini" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">◉</span>
                                     <div>
                                         <div class="model-name">GPT-5 Mini</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gpt-5-mini', -1)">−</button>
+                                        <span class="qty-value" data-model="gpt-5-mini">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gpt-5-mini', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">Cost efficient • 272K context</div>
                             </div>
 
-                            <div class="model-option" data-id="llama-3.3-70b">
-                                <div class="model-header">
-                                    <span class="model-icon">⬞</span>
-                                    <div>
-                                        <div class="model-name">Llama 3.3 70B</div>
-                                        <div class="model-provider">Meta</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Quality text • 128K context</div>
-                            </div>
-
-                            <div class="model-option" data-id="mistral-nemo">
-                                <div class="model-header">
-                                    <span class="model-icon">✤</span>
-                                    <div>
-                                        <div class="model-name">Mistral Nemo</div>
-                                        <div class="model-provider">Mistral</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">12B efficient • 128K context</div>
-                            </div>
-                        </div>
-
-                        <!-- Fast Models -->
-                        <div class="model-category" data-category="fast" style="display:none;">
-                            <div class="model-option" data-id="claude-haiku-4.5">
-                                <div class="model-header">
-                                    <span class="model-icon">◈</span>
-                                    <div>
-                                        <div class="model-name">Claude Haiku 4.5</div>
-                                        <div class="model-provider">Anthropic</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Instant responses • 200K context</div>
-                            </div>
-
-                            <div class="model-option" data-id="gpt-5-nano">
+                            <div class="model-option" data-id="gpt-5-nano" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">○</span>
                                     <div>
                                         <div class="model-name">GPT-5 Nano</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gpt-5-nano', -1)">−</button>
+                                        <span class="qty-value" data-model="gpt-5-nano">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gpt-5-nano', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">Edge deployment • 128K context</div>
                             </div>
 
-                            <div class="model-option" data-id="gemini-2.5-flash-lite">
-                                <div class="model-header">
-                                    <span class="model-icon">◊</span>
-                                    <div>
-                                        <div class="model-name">Gemini 2.5 Flash-Lite</div>
-                                        <div class="model-provider">Google</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Ultra-fast • 1M context</div>
-                            </div>
-
-                            <div class="model-option" data-id="llama-3.2-3b">
-                                <div class="model-header">
-                                    <span class="model-icon">⬝</span>
-                                    <div>
-                                        <div class="model-name">Llama 3.2 3B</div>
-                                        <div class="model-provider">Meta</div>
-                                    </div>
-                                    <input type="checkbox">
-                                </div>
-                                <div class="model-desc">Lightweight edge • 128K context</div>
-                            </div>
-                        </div>
-
-                        <!-- Specialized Models -->
-                        <div class="model-category" data-category="specialized" style="display:none;">
-                            <div class="model-option" data-id="gpt-4o">
+                            <div class="model-option" data-id="gpt-4o" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">⊙</span>
                                     <div>
                                         <div class="model-name">GPT-4o</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gpt-4o', -1)">−</button>
+                                        <span class="qty-value" data-model="gpt-4o">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gpt-4o', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">Real-time audio • Multimodal</div>
                             </div>
 
-                            <div class="model-option" data-id="codestral-2501">
+                            <!-- Anthropic Models -->
+                            <div class="model-option" data-id="claude-opus-4.1" data-provider="anthropic">
                                 <div class="model-header">
-                                    <span class="model-icon">✧</span>
+                                    <span class="model-icon">⬢</span>
                                     <div>
-                                        <div class="model-name">Codestral 25.01</div>
-                                        <div class="model-provider">Mistral</div>
+                                        <div class="model-name">Claude Opus 4.1</div>
+                                        <div class="model-provider">Anthropic</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('claude-opus-4.1', -1)">−</button>
+                                        <span class="qty-value" data-model="claude-opus-4.1">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('claude-opus-4.1', 1)">+</button>
+                                    </div>
                                 </div>
-                                <div class="model-desc">Code generation specialist</div>
+                                <div class="model-desc">Complex reasoning • 200K context</div>
                             </div>
 
-                            <div class="model-option" data-id="llama-3.2-90b-vision">
+                            <div class="model-option" data-id="claude-sonnet-4.5" data-provider="anthropic">
+                                <div class="model-header">
+                                    <span class="model-icon">⬡</span>
+                                    <div>
+                                        <div class="model-name">Claude Sonnet 4.5</div>
+                                        <div class="model-provider">Anthropic</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('claude-sonnet-4.5', -1)">−</button>
+                                        <span class="qty-value" data-model="claude-sonnet-4.5">1</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('claude-sonnet-4.5', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Balanced performance • 200K context</div>
+                            </div>
+
+                            <div class="model-option" data-id="claude-haiku-4.5" data-provider="anthropic">
+                                <div class="model-header">
+                                    <span class="model-icon">◈</span>
+                                    <div>
+                                        <div class="model-name">Claude Haiku 4.5</div>
+                                        <div class="model-provider">Anthropic</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('claude-haiku-4.5', -1)">−</button>
+                                        <span class="qty-value" data-model="claude-haiku-4.5">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('claude-haiku-4.5', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Instant responses • 200K context</div>
+                            </div>
+
+                            <!-- Google Models -->
+                            <div class="model-option" data-id="gemini-2.5-pro" data-provider="google">
+                                <div class="model-header">
+                                    <span class="model-icon">◆</span>
+                                    <div>
+                                        <div class="model-name">Gemini 2.5 Pro</div>
+                                        <div class="model-provider">Google</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gemini-2.5-pro', -1)">−</button>
+                                        <span class="qty-value" data-model="gemini-2.5-pro">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gemini-2.5-pro', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Advanced thinking • 1M context</div>
+                            </div>
+
+                            <div class="model-option" data-id="gemini-2.5-flash" data-provider="google">
+                                <div class="model-header">
+                                    <span class="model-icon">◇</span>
+                                    <div>
+                                        <div class="model-name">Gemini 2.5 Flash</div>
+                                        <div class="model-provider">Google</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gemini-2.5-flash', -1)">−</button>
+                                        <span class="qty-value" data-model="gemini-2.5-flash">1</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gemini-2.5-flash', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Low latency thinking • 1M context</div>
+                            </div>
+
+                            <div class="model-option" data-id="gemini-2.5-flash-lite" data-provider="google">
+                                <div class="model-header">
+                                    <span class="model-icon">◊</span>
+                                    <div>
+                                        <div class="model-name">Gemini 2.5 Flash-Lite</div>
+                                        <div class="model-provider">Google</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gemini-2.5-flash-lite', -1)">−</button>
+                                        <span class="qty-value" data-model="gemini-2.5-flash-lite">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gemini-2.5-flash-lite', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Ultra-fast • 1M context</div>
+                            </div>
+
+                            <div class="model-option" data-id="gemini-2.0-flash" data-provider="google">
+                                <div class="model-header">
+                                    <span class="model-icon">△</span>
+                                    <div>
+                                        <div class="model-name">Gemini 2.0 Flash</div>
+                                        <div class="model-provider">Google</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gemini-2.0-flash', -1)">−</button>
+                                        <span class="qty-value" data-model="gemini-2.0-flash">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gemini-2.0-flash', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Native tool use • 1M context</div>
+                            </div>
+
+                            <!-- Moonshot Models -->
+                            <div class="model-option" data-id="kimi-k2-thinking" data-provider="moonshot">
+                                <div class="model-header">
+                                    <span class="model-icon">⧈</span>
+                                    <div>
+                                        <div class="model-name">Kimi K2 Thinking</div>
+                                        <div class="model-provider">Moonshot</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('kimi-k2-thinking', -1)">−</button>
+                                        <span class="qty-value" data-model="kimi-k2-thinking">1</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('kimi-k2-thinking', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">200+ tool calls • Open source</div>
+                            </div>
+
+                            <div class="model-option" data-id="kimi-k2-instruct" data-provider="moonshot">
+                                <div class="model-header">
+                                    <span class="model-icon">⧉</span>
+                                    <div>
+                                        <div class="model-name">Kimi K2 Instruct</div>
+                                        <div class="model-provider">Moonshot</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('kimi-k2-instruct', -1)">−</button>
+                                        <span class="qty-value" data-model="kimi-k2-instruct">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('kimi-k2-instruct', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">1T parameters • 256K context</div>
+                            </div>
+
+                            <!-- Meta Models -->
+                            <div class="model-option" data-id="llama-4-maverick" data-provider="meta">
+                                <div class="model-header">
+                                    <span class="model-icon">⬟</span>
+                                    <div>
+                                        <div class="model-name">Llama 4 Maverick</div>
+                                        <div class="model-provider">Meta</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('llama-4-maverick', -1)">−</button>
+                                        <span class="qty-value" data-model="llama-4-maverick">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('llama-4-maverick', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">400B MoE • 1M context</div>
+                            </div>
+
+                            <div class="model-option" data-id="llama-4-scout" data-provider="meta">
+                                <div class="model-header">
+                                    <span class="model-icon">⬠</span>
+                                    <div>
+                                        <div class="model-name">Llama 4 Scout</div>
+                                        <div class="model-provider">Meta</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('llama-4-scout', -1)">−</button>
+                                        <span class="qty-value" data-model="llama-4-scout">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('llama-4-scout', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">109B MoE • 10M context</div>
+                            </div>
+
+                            <div class="model-option" data-id="llama-3.3-70b" data-provider="meta">
+                                <div class="model-header">
+                                    <span class="model-icon">⬞</span>
+                                    <div>
+                                        <div class="model-name">Llama 3.3 70B</div>
+                                        <div class="model-provider">Meta</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('llama-3.3-70b', -1)">−</button>
+                                        <span class="qty-value" data-model="llama-3.3-70b">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('llama-3.3-70b', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Quality text • 128K context</div>
+                            </div>
+
+                            <div class="model-option" data-id="llama-3.2-90b-vision" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬣</span>
                                     <div>
                                         <div class="model-name">Llama 3.2 Vision</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('llama-3.2-90b-vision', -1)">−</button>
+                                        <span class="qty-value" data-model="llama-3.2-90b-vision">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('llama-3.2-90b-vision', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">Multimodal vision • 90B</div>
                             </div>
 
-                            <div class="model-option" data-id="pixtral-large">
+                            <div class="model-option" data-id="llama-3.2-3b" data-provider="meta">
+                                <div class="model-header">
+                                    <span class="model-icon">⬝</span>
+                                    <div>
+                                        <div class="model-name">Llama 3.2 3B</div>
+                                        <div class="model-provider">Meta</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('llama-3.2-3b', -1)">−</button>
+                                        <span class="qty-value" data-model="llama-3.2-3b">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('llama-3.2-3b', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Lightweight edge • 128K context</div>
+                            </div>
+
+                            <!-- Mistral Models -->
+                            <div class="model-option" data-id="mistral-large-2407" data-provider="mistral">
+                                <div class="model-header">
+                                    <span class="model-icon">✦</span>
+                                    <div>
+                                        <div class="model-name">Mistral Large 2</div>
+                                        <div class="model-provider">Mistral</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('mistral-large-2407', -1)">−</button>
+                                        <span class="qty-value" data-model="mistral-large-2407">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('mistral-large-2407', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">123B dense • Strong reasoning</div>
+                            </div>
+
+                            <div class="model-option" data-id="codestral-2501" data-provider="mistral">
+                                <div class="model-header">
+                                    <span class="model-icon">✧</span>
+                                    <div>
+                                        <div class="model-name">Codestral 25.01</div>
+                                        <div class="model-provider">Mistral</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('codestral-2501', -1)">−</button>
+                                        <span class="qty-value" data-model="codestral-2501">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('codestral-2501', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Code generation specialist</div>
+                            </div>
+
+                            <div class="model-option" data-id="mistral-nemo" data-provider="mistral">
+                                <div class="model-header">
+                                    <span class="model-icon">✤</span>
+                                    <div>
+                                        <div class="model-name">Mistral Nemo</div>
+                                        <div class="model-provider">Mistral</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('mistral-nemo', -1)">−</button>
+                                        <span class="qty-value" data-model="mistral-nemo">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('mistral-nemo', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">12B efficient • 128K context</div>
+                            </div>
+
+                            <div class="model-option" data-id="pixtral-large" data-provider="mistral">
                                 <div class="model-header">
                                     <span class="model-icon">✥</span>
                                     <div>
                                         <div class="model-name">Pixtral Large</div>
                                         <div class="model-provider">Mistral</div>
                                     </div>
-                                    <input type="checkbox">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('pixtral-large', -1)">−</button>
+                                        <span class="qty-value" data-model="pixtral-large">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('pixtral-large', 1)">+</button>
+                                    </div>
                                 </div>
                                 <div class="model-desc">Text + image understanding</div>
                             </div>
                         </div>
+
+                        <!-- Provider-specific views will be filtered dynamically -->
                     </div>
 
                     <div class="model-panel-footer">
@@ -2386,18 +2695,98 @@
             }
         }
 
-        function switchCategory(category) {
+        // Track model quantities
+        const modelQuantities = {
+            'gpt-5': 1,
+            'gpt-5-mini': 0,
+            'gpt-5-nano': 0,
+            'gpt-4o': 0,
+            'claude-opus-4.1': 0,
+            'claude-sonnet-4.5': 1,
+            'claude-haiku-4.5': 0,
+            'gemini-2.5-pro': 0,
+            'gemini-2.5-flash': 1,
+            'gemini-2.5-flash-lite': 0,
+            'gemini-2.0-flash': 0,
+            'kimi-k2-thinking': 1,
+            'kimi-k2-instruct': 0,
+            'llama-4-maverick': 0,
+            'llama-4-scout': 0,
+            'llama-3.3-70b': 0,
+            'llama-3.2-90b-vision': 0,
+            'llama-3.2-3b': 0,
+            'mistral-large-2407': 0,
+            'codestral-2501': 0,
+            'mistral-nemo': 0,
+            'pixtral-large': 0
+        };
+
+        function adjustQuantity(modelId, delta) {
+            const currentQty = modelQuantities[modelId] || 0;
+            const newQty = Math.max(0, Math.min(6, currentQty + delta)); // Max 6 instances per model
+            modelQuantities[modelId] = newQty;
+
+            // Update the display
+            const qtyElement = document.querySelector(`.qty-value[data-model="${modelId}"]`);
+            if (qtyElement) {
+                qtyElement.textContent = newQty;
+
+                // Disable/enable minus button based on quantity
+                const modelOption = qtyElement.closest('.model-option');
+                const minusBtn = modelOption.querySelector('.qty-btn.minus');
+                if (minusBtn) {
+                    minusBtn.disabled = newQty === 0;
+                    minusBtn.style.opacity = newQty === 0 ? '0.3' : '1';
+                }
+            }
+
+            // Update selection count
+            updateSelectionCount();
+
+            // Trigger haptic feedback
+            if (typeof haptics !== 'undefined') {
+                haptics.trigger(delta > 0 ? 'selection' : 'tap');
+            }
+        }
+
+        function switchProvider(provider) {
             // Update tab styles
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
 
-            // Show/hide model categories
-            document.querySelectorAll('.model-category').forEach(cat => {
-                cat.style.display = 'none';
+            // Show all models or filter by provider
+            const modelOptions = document.querySelectorAll('.model-option');
+            let visibleCount = 0;
+
+            modelOptions.forEach(option => {
+                if (provider === 'all') {
+                    option.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    const modelProvider = option.dataset.provider.toLowerCase();
+                    const shouldShow = modelProvider === provider.toLowerCase();
+                    option.style.display = shouldShow ? 'flex' : 'none';
+                    if (shouldShow) visibleCount++;
+                }
             });
-            document.querySelector(`[data-category="${category}"]`).style.display = 'grid';
+
+            // Show a message if no models are visible in this filter
+            const modelsList = document.querySelector('.models-list');
+            let emptyMessage = modelsList ? modelsList.querySelector('.empty-filter-message') : null;
+
+            if (visibleCount === 0) {
+                if (!emptyMessage) {
+                    emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'empty-filter-message';
+                    emptyMessage.style.cssText = 'text-align: center; padding: 40px; color: var(--text-tertiary); font-family: Inter, sans-serif; font-size: 13px;';
+                    emptyMessage.textContent = `No ${provider} models available`;
+                    modelsList.appendChild(emptyMessage);
+                }
+            } else if (emptyMessage) {
+                emptyMessage.remove();
+            }
 
             if (typeof haptics !== 'undefined') {
                 haptics.trigger('tap');
@@ -2405,22 +2794,24 @@
         }
 
         function updateSelectionCount() {
-            const checkedCount = document.querySelectorAll('.model-option input:checked').length;
+            // Count total quantity of models selected
+            const totalCount = Object.values(modelQuantities).reduce((sum, qty) => sum + qty, 0);
             const countText = document.querySelector('.selection-count');
             if (countText) {
-                countText.textContent = `${checkedCount} models selected (max ${maxModels})`;
+                const uniqueModels = Object.values(modelQuantities).filter(qty => qty > 0).length;
+                countText.textContent = `${totalCount} models selected (${uniqueModels} unique, max ${maxModels} total)`;
             }
 
-            // Disable unchecked checkboxes if at max
-            if (checkedCount >= maxModels) {
-                document.querySelectorAll('.model-option input:not(:checked)').forEach(cb => {
-                    cb.disabled = true;
-                    cb.parentElement.parentElement.style.opacity = '0.5';
+            // Disable plus buttons if at max total
+            if (totalCount >= maxModels) {
+                document.querySelectorAll('.qty-btn.plus').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.3';
                 });
             } else {
-                document.querySelectorAll('.model-option input').forEach(cb => {
-                    cb.disabled = false;
-                    cb.parentElement.parentElement.style.opacity = '1';
+                document.querySelectorAll('.qty-btn.plus').forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
                 });
             }
         }
@@ -2430,20 +2821,34 @@
             const activeModelsDiv = document.getElementById('active-models');
             activeModelsDiv.innerHTML = '';
 
-            document.querySelectorAll('.model-option input:checked').forEach(checkbox => {
-                const modelOption = checkbox.closest('.model-option');
-                const modelId = modelOption.dataset.id;
-                const modelName = modelOption.querySelector('.model-name').textContent;
-                const modelIcon = modelOption.querySelector('.model-icon').textContent;
+            // Process each model with quantity > 0
+            Object.entries(modelQuantities).forEach(([modelId, quantity]) => {
+                if (quantity > 0) {
+                    // Find the model option element to get display info
+                    const modelOption = document.querySelector(`.model-option[data-id="${modelId}"]`);
+                    if (!modelOption) return;
 
-                selectedModels.push(modelId);
+                    const modelName = modelOption.querySelector('.model-name').textContent;
+                    const modelIcon = modelOption.querySelector('.model-icon').textContent;
 
-                // Create active model chip
-                const chip = document.createElement('div');
-                chip.className = 'model-chip active';
-                chip.dataset.model = modelId;
-                chip.innerHTML = `<span>${modelIcon}</span> ${modelName}`;
-                activeModelsDiv.appendChild(chip);
+                    // Add the model ID to selectedModels array (multiple times for multiple instances)
+                    for (let i = 0; i < quantity; i++) {
+                        selectedModels.push(modelId);
+                    }
+
+                    // Create active model chip with quantity indicator if > 1
+                    const chip = document.createElement('div');
+                    chip.className = 'model-chip active';
+                    chip.dataset.model = modelId;
+
+                    if (quantity > 1) {
+                        chip.innerHTML = `<span>${modelIcon}</span> ${modelName} <span style="opacity:0.7">×${quantity}</span>`;
+                    } else {
+                        chip.innerHTML = `<span>${modelIcon}</span> ${modelName}`;
+                    }
+
+                    activeModelsDiv.appendChild(chip);
+                }
             });
 
             if (typeof haptics !== 'undefined') {
@@ -3229,18 +3634,48 @@
 
         // Initialize all interactions
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize model selection checkboxes
-            document.querySelectorAll('.model-option').forEach(option => {
-                const checkbox = option.querySelector('input[type="checkbox"]');
-                if (checkbox) {
-                    checkbox.addEventListener('change', () => {
-                        updateSelectionCount();
-                        if (typeof haptics !== 'undefined') {
-                            haptics.trigger('selection');
-                        }
-                    });
+            // Initialize model selection count and display on page load
+            updateSelectionCount();
+
+            // Initialize minus button states based on initial quantities
+            Object.entries(modelQuantities).forEach(([modelId, quantity]) => {
+                const modelOption = document.querySelector(`.model-option[data-id="${modelId}"]`);
+                if (modelOption) {
+                    const minusBtn = modelOption.querySelector('.qty-btn.minus');
+                    if (minusBtn && quantity === 0) {
+                        minusBtn.disabled = true;
+                        minusBtn.style.opacity = '0.3';
+                    }
                 }
             });
+
+            // Display the initially selected models
+            const activeModelsDiv = document.getElementById('active-models');
+            if (activeModelsDiv) {
+                activeModelsDiv.innerHTML = '';
+                Object.entries(modelQuantities).forEach(([modelId, quantity]) => {
+                    if (quantity > 0) {
+                        // Create a temporary chip to show initial selection
+                        const modelOption = document.querySelector(`.model-option[data-id="${modelId}"]`);
+                        if (modelOption) {
+                            const modelName = modelOption.querySelector('.model-name').textContent;
+                            const modelIcon = modelOption.querySelector('.model-icon').textContent;
+
+                            const chip = document.createElement('div');
+                            chip.className = 'model-chip active';
+                            chip.dataset.model = modelId;
+
+                            if (quantity > 1) {
+                                chip.innerHTML = `<span>${modelIcon}</span> ${modelName} <span style="opacity:0.7">×${quantity}</span>`;
+                            } else {
+                                chip.innerHTML = `<span>${modelIcon}</span> ${modelName}`;
+                            }
+
+                            activeModelsDiv.appendChild(chip);
+                        }
+                    }
+                });
+            }
 
             // Initialize simple resonance animation
             setTimeout(() => {
