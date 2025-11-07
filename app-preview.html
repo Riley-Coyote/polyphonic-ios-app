@@ -505,7 +505,9 @@
             transform: translate(-50%, -50%);
             width: 90%;
             max-width: 600px;
-            max-height: 80vh;
+            height: 80vh;
+            min-height: 500px;
+            max-height: 700px;
             background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             border: 1px solid var(--border-secondary);
             border-radius: 16px;
@@ -528,6 +530,7 @@
             border-bottom: 1px solid var(--border-primary);
             background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent);
             position: relative;
+            flex-shrink: 0;
         }
 
         .model-panel-header::after {
@@ -588,6 +591,7 @@
             border-bottom: 1px solid var(--border-primary);
             overflow-x: auto;
             scrollbar-width: none;
+            flex-shrink: 0;
         }
 
         .model-categories::-webkit-scrollbar {
@@ -638,7 +642,27 @@
         .models-grid {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 16px;
+            min-height: 0;
+        }
+
+        .models-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .models-grid::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        .models-grid::-webkit-scrollbar-thumb {
+            background: var(--border-secondary);
+            border-radius: 3px;
+        }
+
+        .models-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--text-quaternary);
         }
 
         .model-category {
@@ -691,6 +715,13 @@
             color: var(--text-secondary);
             filter: brightness(1.1);
             flex-shrink: 0;
+            width: 30px;
+            text-align: center;
+        }
+
+        .model-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .model-name {
@@ -699,6 +730,9 @@
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .model-provider {
@@ -714,7 +748,7 @@
             font-size: 11px;
             color: var(--text-tertiary);
             line-height: 1.4;
-            margin-left: 38px;
+            margin-left: 42px;
         }
 
         /* Quantity control styling */
@@ -801,6 +835,7 @@
             border-top: 1px solid var(--border-primary);
             background: linear-gradient(to top, var(--bg-secondary), var(--bg-tertiary));
             position: relative;
+            flex-shrink: 0;
         }
 
         .model-panel-footer::before {
@@ -1692,7 +1727,7 @@
                             <div class="model-option" data-id="gpt-5" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">◎</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">GPT-5</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
@@ -1705,10 +1740,26 @@
                                 <div class="model-desc">State-of-the-art reasoning • 272K context</div>
                             </div>
 
+                            <div class="model-option" data-id="gpt-5-thinking" data-provider="openai">
+                                <div class="model-header">
+                                    <span class="model-icon">⊚</span>
+                                    <div class="model-info">
+                                        <div class="model-name">GPT-5 Thinking</div>
+                                        <div class="model-provider">OpenAI</div>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button class="qty-btn minus" onclick="adjustQuantity('gpt-5-thinking', -1)">−</button>
+                                        <span class="qty-value" data-model="gpt-5-thinking">0</span>
+                                        <button class="qty-btn plus" onclick="adjustQuantity('gpt-5-thinking', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="model-desc">Deep reasoning • Chain-of-thought • 272K context</div>
+                            </div>
+
                             <div class="model-option" data-id="gpt-5-mini" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">◉</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">GPT-5 Mini</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
@@ -1724,7 +1775,7 @@
                             <div class="model-option" data-id="gpt-5-nano" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">○</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">GPT-5 Nano</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
@@ -1740,7 +1791,7 @@
                             <div class="model-option" data-id="gpt-4o" data-provider="openai">
                                 <div class="model-header">
                                     <span class="model-icon">⊙</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">GPT-4o</div>
                                         <div class="model-provider">OpenAI</div>
                                     </div>
@@ -1757,7 +1808,7 @@
                             <div class="model-option" data-id="claude-opus-4.1" data-provider="anthropic">
                                 <div class="model-header">
                                     <span class="model-icon">⬢</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Claude Opus 4.1</div>
                                         <div class="model-provider">Anthropic</div>
                                     </div>
@@ -1773,7 +1824,7 @@
                             <div class="model-option" data-id="claude-sonnet-4.5" data-provider="anthropic">
                                 <div class="model-header">
                                     <span class="model-icon">⬡</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Claude Sonnet 4.5</div>
                                         <div class="model-provider">Anthropic</div>
                                     </div>
@@ -1789,7 +1840,7 @@
                             <div class="model-option" data-id="claude-haiku-4.5" data-provider="anthropic">
                                 <div class="model-header">
                                     <span class="model-icon">◈</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Claude Haiku 4.5</div>
                                         <div class="model-provider">Anthropic</div>
                                     </div>
@@ -1806,7 +1857,7 @@
                             <div class="model-option" data-id="gemini-2.5-pro" data-provider="google">
                                 <div class="model-header">
                                     <span class="model-icon">◆</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Gemini 2.5 Pro</div>
                                         <div class="model-provider">Google</div>
                                     </div>
@@ -1822,7 +1873,7 @@
                             <div class="model-option" data-id="gemini-2.5-flash" data-provider="google">
                                 <div class="model-header">
                                     <span class="model-icon">◇</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Gemini 2.5 Flash</div>
                                         <div class="model-provider">Google</div>
                                     </div>
@@ -1838,7 +1889,7 @@
                             <div class="model-option" data-id="gemini-2.5-flash-lite" data-provider="google">
                                 <div class="model-header">
                                     <span class="model-icon">◊</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Gemini 2.5 Flash-Lite</div>
                                         <div class="model-provider">Google</div>
                                     </div>
@@ -1854,7 +1905,7 @@
                             <div class="model-option" data-id="gemini-2.0-flash" data-provider="google">
                                 <div class="model-header">
                                     <span class="model-icon">△</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Gemini 2.0 Flash</div>
                                         <div class="model-provider">Google</div>
                                     </div>
@@ -1871,7 +1922,7 @@
                             <div class="model-option" data-id="kimi-k2-thinking" data-provider="moonshot">
                                 <div class="model-header">
                                     <span class="model-icon">⧈</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Kimi K2 Thinking</div>
                                         <div class="model-provider">Moonshot</div>
                                     </div>
@@ -1887,7 +1938,7 @@
                             <div class="model-option" data-id="kimi-k2-instruct" data-provider="moonshot">
                                 <div class="model-header">
                                     <span class="model-icon">⧉</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Kimi K2 Instruct</div>
                                         <div class="model-provider">Moonshot</div>
                                     </div>
@@ -1904,7 +1955,7 @@
                             <div class="model-option" data-id="llama-4-maverick" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬟</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Llama 4 Maverick</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
@@ -1920,7 +1971,7 @@
                             <div class="model-option" data-id="llama-4-scout" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬠</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Llama 4 Scout</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
@@ -1936,7 +1987,7 @@
                             <div class="model-option" data-id="llama-3.3-70b" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬞</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Llama 3.3 70B</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
@@ -1952,7 +2003,7 @@
                             <div class="model-option" data-id="llama-3.2-90b-vision" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬣</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Llama 3.2 Vision</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
@@ -1968,7 +2019,7 @@
                             <div class="model-option" data-id="llama-3.2-3b" data-provider="meta">
                                 <div class="model-header">
                                     <span class="model-icon">⬝</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Llama 3.2 3B</div>
                                         <div class="model-provider">Meta</div>
                                     </div>
@@ -1985,7 +2036,7 @@
                             <div class="model-option" data-id="mistral-large-2407" data-provider="mistral">
                                 <div class="model-header">
                                     <span class="model-icon">✦</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Mistral Large 2</div>
                                         <div class="model-provider">Mistral</div>
                                     </div>
@@ -2001,7 +2052,7 @@
                             <div class="model-option" data-id="codestral-2501" data-provider="mistral">
                                 <div class="model-header">
                                     <span class="model-icon">✧</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Codestral 25.01</div>
                                         <div class="model-provider">Mistral</div>
                                     </div>
@@ -2017,7 +2068,7 @@
                             <div class="model-option" data-id="mistral-nemo" data-provider="mistral">
                                 <div class="model-header">
                                     <span class="model-icon">✤</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Mistral Nemo</div>
                                         <div class="model-provider">Mistral</div>
                                     </div>
@@ -2033,7 +2084,7 @@
                             <div class="model-option" data-id="pixtral-large" data-provider="mistral">
                                 <div class="model-header">
                                     <span class="model-icon">✥</span>
-                                    <div>
+                                    <div class="model-info">
                                         <div class="model-name">Pixtral Large</div>
                                         <div class="model-provider">Mistral</div>
                                     </div>
@@ -2698,6 +2749,7 @@
         // Track model quantities
         const modelQuantities = {
             'gpt-5': 1,
+            'gpt-5-thinking': 0,
             'gpt-5-mini': 0,
             'gpt-5-nano': 0,
             'gpt-4o': 0,
