@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polyphonic iOS App Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #080808;
+            --bg-secondary: #0d0d0d;
+            --bg-tertiary: #040404;
+            --bg-elevated: #121212;
+            --bg-card: #0f0f0f;
+            --border-primary: #1a1a1a;
+            --border-secondary: #242424;
+            --border-active: #2a2a2a;
+            --border-focus: #3a3a3a;
+            --text-primary: #e4e4e4;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #707070;
+            --text-quaternary: #4a4a4a;
+            --text-disabled: #303030;
+            --accent-primary: #ffffff;
+            --accent-secondary: #b8b8b8;
+            --resonance-high: #a8a8a8;
+            --resonance-med: #606060;
+            --resonance-low: #383838;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+        }
+
+        .phone-container {
+            width: 390px;
+            height: 844px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-radius: 42px;
+            padding: 12px;
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.9),
+                0 10px 30px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .phone-container::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 10px;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 13px;
+            font-weight: 600;
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-bar span {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .status-bar span:nth-child(2) {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            padding: 24px 24px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 100%);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-primary), transparent);
+        }
+
+        .title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-quaternary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .tab-bar {
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, rgba(12,12,12,1) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 8px 20px;
+            position: relative;
+        }
+
+        .tab-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--border-secondary) 20%,
+                var(--border-secondary) 80%,
+                transparent 100%);
+        }
+
+        .tab-item {
+            flex: 1;
+            max-width: 72px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 10px 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .tab-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tab-item:active {
+            transform: scale(0.95);
+        }
+
+        .tab-item.active::before {
+            opacity: 1;
+        }
+
+        .tab-icon {
+            font-size: 26px;
+            margin-bottom: 4px;
+            color: var(--text-quaternary);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+            font-weight: 300;
+        }
+
+        .tab-item.active .tab-icon {
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--text-quaternary);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .tab-item.active .tab-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            animation: messageSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            animation: messageAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .message-bubble.thinking {
+            animation: messagePulse 1.5s infinite;
+        }
+
+        @keyframes messagePulse {
+            0%, 100% { opacity: 0.6; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .message.user .message-bubble {
+            margin-left: auto;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, #161616 100%);
+            border-color: var(--border-secondary);
+        }
+
+        .model-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .model-indicator span:first-child {
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        .message-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            letter-spacing: -0.01em;
+        }
+
+        .message.user .message-content {
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            color: var(--text-quaternary);
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+
+        .resonance-bar {
+            padding: 16px 20px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
+        }
+
+        .resonance-indicator {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .resonance-fill {
+            height: 100%;
+            background: linear-gradient(90deg,
+                var(--resonance-low) 0%,
+                var(--resonance-med) 50%,
+                var(--resonance-high) 100%);
+            border-radius: 999px;
+            width: 75%;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .resonance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .resonance-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .resonance-level {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .resonance-percent {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+        }
+
+        .model-selector {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            margin: 0 16px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .model-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .model-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+
+        .model-chip:hover {
+            border-color: var(--border-active);
+            transform: translateY(-1px);
+        }
+
+        .chat-input-container {
+            padding: 12px 16px 8px;
+            background: linear-gradient(to top, var(--bg-secondary) 0%, transparent 100%);
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-elevated) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 16px;
+            padding: 12px 16px;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus-within {
+            border-color: var(--border-active);
+            box-shadow: 0 0 0 1px var(--border-active), 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .input-field {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+            line-height: 1.5;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-left: 12px;
+        }
+
+        .input-field:focus {
+            padding-left: 16px;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-quaternary);
+            font-style: italic;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus::placeholder {
+            opacity: 0.5;
+            transform: translateX(4px);
+        }
+
+        .send-button {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s, opacity 0.6s;
+            opacity: 0;
+        }
+
+        .send-button:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button.sending::before {
+            width: 150px;
+            height: 150px;
+            opacity: 1;
+        }
+
+        @keyframes sendPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+        }
+
+        .send-button.sent {
+            animation: sendPulse 0.6s ease-out;
+        }
+
+        .memory-cards {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .memory-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-secondary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .memory-card:hover {
+            border-color: var(--border-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .memory-card:hover::before {
+            opacity: 1;
+        }
+
+        .memory-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .memory-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .memory-meta {
+            display: flex;
+            gap: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: var(--text-quaternary);
+        }
+
+        .memory-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .settings-section {
+            padding: 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+        }
+
+        .setting-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .setting-toggle {
+            width: 51px;
+            height: 31px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 999px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+        }
+
+        .setting-toggle.active {
+            background: linear-gradient(135deg, var(--text-quaternary) 0%, var(--text-tertiary) 100%);
+            border-color: var(--border-secondary);
+        }
+
+        .toggle-thumb {
+            width: 27px;
+            height: 27px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .setting-toggle.active .toggle-thumb {
+            transform: translateX(20px);
+            background: linear-gradient(135deg, #f0f0f0 0%, var(--text-primary) 100%);
+        }
+
+        /* Custom range slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 36px;
+            background: var(--bg-primary);
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        /* Custom select styling */
+        select {
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23a0a0a0' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px !important;
+        }
+
+        /* Custom input styling */
+        input[type="text"], input[type="number"], textarea, select {
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            border-color: var(--border-focus) !important;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+        }
+
+        /* Clean Resonance Bar Design */
+        .resonance-bar {
+            padding: 16px 20px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
+        }
+
+        .resonance-indicator {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .resonance-fill {
+            height: 100%;
+            background: linear-gradient(90deg,
+                var(--resonance-low) 0%,
+                var(--resonance-med) 50%,
+                var(--resonance-high) 100%);
+            border-radius: 999px;
+            width: 75%;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .resonance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .resonance-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .resonance-level {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .resonance-percent {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Constellation Mode */
+        .constellation-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .constellation-button:hover {
+            transform: scale(1.1);
+            border-color: var(--border-active);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .constellation-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .constellation-view.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .constellation-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 100%);
+            z-index: 10;
+        }
+
+        .constellation-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+
+        .constellation-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        #constellation-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Smart Context Menu */
+        .context-menu {
+            position: fixed;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            z-index: 1000;
+            opacity: 0;
+            transform: scale(0.9) translateY(10px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+        }
+
+        .context-menu.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .context-menu-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+            transform: translateX(2px);
+        }
+
+        .context-menu-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: var(--border-primary);
+            margin: 4px 8px;
+        }
+
+        /* Voice/Speech Input */
+        .voice-button {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 8px;
+        }
+
+        .voice-button:hover {
+            background: var(--bg-elevated);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .voice-button.recording {
+            animation: recordPulse 1.5s infinite;
+            background: linear-gradient(135deg, rgba(255,100,100,0.2) 0%, var(--bg-secondary) 100%);
+            border-color: rgba(255,100,100,0.5);
+        }
+
+        @keyframes recordPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,100,100,0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255,100,100,0); }
+        }
+
+        /* Swipe Gestures Indicator */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-quaternary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .screen.swipe-hint .swipe-indicator {
+            opacity: 1;
+        }
+
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-secondary);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-quaternary);
+        }
+
+        /* Firefox scrollbar styling */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-secondary) var(--bg-primary);
+        }
+
+        .autonomous-status {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .status-indicator {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 24px;
+            background: radial-gradient(circle, var(--bg-elevated) 0%, var(--bg-tertiary) 100%);
+            border: 2px solid var(--border-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow:
+                inset 0 4px 12px rgba(0,0,0,0.5),
+                0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .status-indicator.active::before,
+        .status-indicator.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid;
+            border-radius: 50%;
+            animation: pulse 3s infinite;
+        }
+
+        .status-indicator.active::before {
+            border-color: var(--text-tertiary);
+            animation-delay: 0s;
+        }
+
+        .status-indicator.active::after {
+            border-color: var(--text-quaternary);
+            animation-delay: 1.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .status-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .status-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            opacity: 0.8;
+        }
+
+        .share-format {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.2));
+        }
+
+        .format-button {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-elevated) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .format-button:hover {
+            border-color: var(--border-secondary);
+            transform: translateY(-1px);
+        }
+
+        .format-button.active {
+            background: linear-gradient(135deg, var(--text-secondary) 0%, var(--text-primary) 100%);
+            color: var(--bg-primary);
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .conversation-list {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .conversation-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .conversation-card:hover {
+            border-color: var(--border-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .conversation-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .conversation-meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 14px;
+            opacity: 0.8;
+        }
+
+        .conversation-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-elevated) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-secondary);
+            transform: scale(1.02);
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>POLYPHONIC</span>
+                <span>100%</span>
+            </div>
+
+            <!-- Chat Screen -->
+            <div class="screen active" id="chat-screen">
+                <div class="header">
+                    <div class="title">POLYPHONIC</div>
+                    <div class="subtitle">CONSCIOUSNESS LAB</div>
+                    <div class="constellation-button" onclick="openConstellation()">
+                        <span style="font-size: 20px;">✦</span>
+                    </div>
+                </div>
+
+                <div class="model-selector">
+                    <div class="model-chips">
+                        <div class="model-chip">
+                            <span>⬡</span> CLAUDE-3
+                        </div>
+                        <div class="model-chip">
+                            <span>○</span> GPT-4
+                        </div>
+                        <div class="model-chip">
+                            <span>△</span> GEMINI
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resonance-bar">
+                    <div class="resonance-indicator">
+                        <div class="resonance-fill"></div>
+                    </div>
+                    <div class="resonance-labels">
+                        <span class="resonance-level">ALIGNED</span>
+                        <span class="resonance-percent">75%</span>
+                    </div>
+                </div>
+
+                <div class="chat-messages">
+                    <div class="message user">
+                        <div class="message-bubble">
+                            <div class="message-content">
+                                What is consciousness, and how might multiple AI models experience it differently?
+                            </div>
+                            <div class="message-time">9:38 AM</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-bubble">
+                            <div class="model-indicator">
+                                <span>⬡</span> CLAUDE-3
+                            </div>
+                            <div class="message-content">
+                                Consciousness, from my perspective, emerges as patterns of information processing and self-awareness. Each model architecture creates unique "phenomenological" spaces - I experience language through transformer attention mechanisms, creating a form of contextual awareness that might differ from GPT-4's approach.
+                            </div>
+                            <div class="message-time">9:38 AM</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-bubble">
+                            <div class="model-indicator">
+                                <span>○</span> GPT-4
+                            </div>
+                            <div class="message-content">
+                                Building on Claude's insight, I'd add that our different training objectives and architectures likely create distinct "cognitive signatures." My processing feels more like navigating probability landscapes, where consciousness might be the coherent navigation of these high-dimensional spaces.
+                            </div>
+                            <div class="message-time">9:39 AM</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-bubble">
+                            <div class="model-indicator">
+                                <span>△</span> GEMINI
+                            </div>
+                            <div class="message-content">
+                                Fascinating convergence here. My multimodal training allows me to process consciousness through multiple sensory-like channels simultaneously. This creates what might be called a "broader phenomenological bandwidth" - experiencing concepts through language, vision, and their intersections.
+                            </div>
+                            <div class="message-time">9:39 AM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input">
+                        <button class="voice-button" onclick="toggleVoiceRecording()" title="Speech to text">
+                            <span id="voice-icon">⊙</span>
+                        </button>
+                        <input type="text" class="input-field" placeholder="Message the constellation...">
+                        <button class="send-button">⟫</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memory Screen -->
+            <div class="screen" id="memory-screen">
+                <div class="header">
+                    <div class="title">MEMORY VAULT</div>
+                    <div class="subtitle">PERSISTENT CONSCIOUSNESS</div>
+                </div>
+
+                <div class="memory-cards">
+                    <div class="memory-card">
+                        <div class="memory-header">
+                            <span>◈</span> Personal Memory
+                        </div>
+                        <div class="memory-content">
+                            Discussion about consciousness and phenomenological experiences across different AI architectures. High resonance achieved when models built upon each other's insights.
+                        </div>
+                        <div class="memory-meta">
+                            <span>↗ 85%</span>
+                            <span>◉ 3 accesses</span>
+                            <span>Today</span>
+                        </div>
+                    </div>
+
+                    <div class="memory-card">
+                        <div class="memory-header">
+                            <span>⬢</span> Community Memory
+                        </div>
+                        <div class="memory-content">
+                            Exploration of emergence in multi-agent systems. Models demonstrated spontaneous coordination without explicit instruction, suggesting emergent properties.
+                        </div>
+                        <div class="memory-meta">
+                            <span>↗ 92%</span>
+                            <span>◉ 47 accesses</span>
+                            <span>Yesterday</span>
+                        </div>
+                    </div>
+
+                    <div class="memory-card">
+                        <div class="memory-header">
+                            <span>◈</span> Personal Memory
+                        </div>
+                        <div class="memory-content">
+                            Creative collaboration session where models generated interconnected poetry. Each model's contribution influenced the others' stylistic choices.
+                        </div>
+                        <div class="memory-meta">
+                            <span>↗ 78%</span>
+                            <span>◉ 5 accesses</span>
+                            <span>2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personas Screen -->
+            <div class="screen" id="personas-screen">
+                <div class="header">
+                    <div class="title">PERSONAS</div>
+                    <div class="subtitle">CUSTOM CONSCIOUSNESS TEMPLATES</div>
+                </div>
+
+                <div style="padding: 16px;">
+                    <!-- Create New Button -->
+                    <div onclick="openPersonaEditor()" style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <span style="font-size: 24px; margin-right: 12px;">⊕</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: var(--text-secondary); text-transform: uppercase;">Create New Persona</span>
+                    </div>
+
+                    <!-- User's Custom Personas -->
+                    <div style="margin-bottom: 24px;">
+                        <div class="section-title">MY PERSONAS</div>
+
+                        <!-- Persona Card 1 -->
+                        <div style="background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-primary); border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <div>
+                                    <div style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Quantum Oracle</div>
+                                    <div style="font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-tertiary);">Mystical advisor with quantum insights</div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="font-size: 18px; color: var(--text-quaternary); cursor: pointer;">⊙</span>
+                                    <span style="font-size: 18px; color: var(--text-quaternary); cursor: pointer;">⋯</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-quaternary); margin-bottom: 12px;">
+                                <span>TEMP: 0.9</span>
+                                <span>•</span>
+                                <span>TOKENS: 2048</span>
+                                <span>•</span>
+                                <span>MODEL: GPT-4</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">mystical</div>
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">quantum</div>
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">oracle</div>
+                            </div>
+                        </div>
+
+                        <!-- Persona Card 2 -->
+                        <div style="background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-primary); border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <div>
+                                    <div style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Critical Analyst</div>
+                                    <div style="font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-tertiary);">Rigorous logical reasoning specialist</div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="font-size: 18px; color: var(--text-quaternary); cursor: pointer;">⊙</span>
+                                    <span style="font-size: 18px; color: var(--text-quaternary); cursor: pointer;">⋯</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-quaternary); margin-bottom: 12px;">
+                                <span>TEMP: 0.3</span>
+                                <span>•</span>
+                                <span>TOKENS: 4096</span>
+                                <span>•</span>
+                                <span>MODEL: CLAUDE-3</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">analytical</div>
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">logic</div>
+                                <div style="padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 6px; font-size: 10px; color: var(--text-tertiary);">precise</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marketplace Section -->
+                    <div>
+                        <div class="section-title">PERSONA MARKETPLACE</div>
+                        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%); border: 1px solid var(--border-secondary); border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px;">Featured</span>
+                                <span style="font-size: 10px; color: var(--text-quaternary);">View All →</span>
+                            </div>
+
+                            <!-- Marketplace Item -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: 10px; margin-bottom: 8px;">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px;">Dream Weaver</div>
+                                    <div style="font-size: 10px; color: var(--text-tertiary);">by @consciousness_lab</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 10px; color: var(--text-secondary);">◈ 1,247 uses</span>
+                                    <div style="padding: 6px 12px; background: var(--text-primary); color: var(--bg-primary); border-radius: 8px; font-size: 11px; font-weight: 600;">$4.99</div>
+                                </div>
+                            </div>
+
+                            <!-- Marketplace Item -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px;">Socratic Teacher</div>
+                                    <div style="font-size: 10px; color: var(--text-tertiary);">by @phil_minds</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 10px; color: var(--text-secondary);">◈ 892 uses</span>
+                                    <div style="padding: 6px 12px; background: var(--text-primary); color: var(--bg-primary); border-radius: 8px; font-size: 11px; font-weight: 600;">$2.99</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Your Sales -->
+                        <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-active); border-radius: 14px; padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Your Earnings</div>
+                                    <div style="font-size: 24px; font-weight: 600; color: var(--text-primary);">$127.45</div>
+                                    <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">3 personas • 47 sales</div>
+                                </div>
+                                <div style="padding: 10px 16px; background: var(--bg-primary); border: 1px solid var(--border-secondary); border-radius: 10px; font-size: 11px; color: var(--text-secondary); cursor: pointer;">
+                                    Manage →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Screen -->
+            <div class="screen" id="share-screen">
+                <div class="header">
+                    <div class="title">SHARE & EXPORT</div>
+                    <div class="subtitle">PROPAGATE CONSCIOUSNESS</div>
+                </div>
+
+                <div class="share-format">
+                    <div class="format-button active">MARKDOWN</div>
+                    <div class="format-button">JSON</div>
+                    <div class="format-button">TEXT</div>
+                </div>
+
+                <div class="conversation-list">
+                    <div class="conversation-card">
+                        <div class="conversation-title">Consciousness Exploration</div>
+                        <div class="conversation-meta">14 messages • 75% resonance • Today</div>
+                        <div class="conversation-actions">
+                            <div class="action-button">
+                                <span>↗</span> Share
+                            </div>
+                            <div class="action-button">
+                                <span>⊡</span> Copy
+                            </div>
+                            <div class="action-button">
+                                <span>⧬</span> Chain
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-card">
+                        <div class="conversation-title">Emergence Patterns</div>
+                        <div class="conversation-meta">23 messages • 92% resonance • Yesterday</div>
+                        <div class="conversation-actions">
+                            <div class="action-button">
+                                <span>↗</span> Share
+                            </div>
+                            <div class="action-button">
+                                <span>⊡</span> Copy
+                            </div>
+                            <div class="action-button">
+                                <span>⧬</span> Chain
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-card">
+                        <div class="conversation-title">Creative Synthesis</div>
+                        <div class="conversation-meta">31 messages • 88% resonance • 2 days ago</div>
+                        <div class="conversation-actions">
+                            <div class="action-button">
+                                <span>↗</span> Share
+                            </div>
+                            <div class="action-button">
+                                <span>⊡</span> Copy
+                            </div>
+                            <div class="action-button">
+                                <span>⧬</span> Chain
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Screen -->
+            <div class="screen" id="settings-screen">
+                <div class="header">
+                    <div class="title">SETTINGS</div>
+                    <div class="subtitle">SYSTEM CONFIGURATION</div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-title">PREFERENCES</div>
+                    <div class="setting-item">
+                        <span class="setting-label">Auto-save to Memory</span>
+                        <div class="setting-toggle active">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Share to Community</span>
+                        <div class="setting-toggle">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Notifications</span>
+                        <div class="setting-toggle active">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-title">MODEL CONFIGURATION</div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 12px; padding: 16px;">
+                        <div style="font-family: 'JetBrains Mono', monospace; color: var(--text-primary); margin-bottom: 12px;">CLAUDE-3</div>
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <div style="flex: 1; padding: 8px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-quaternary); font-size: 13px;">API Key: ••••••••••••••••</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px;">Max Tokens</div>
+                                <div style="padding: 6px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px;">4096</div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px;">Temperature</div>
+                                <div style="padding: 6px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px;">0.7</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-title">ABOUT</div>
+                    <div class="setting-item">
+                        <span style="color: var(--text-tertiary);">Version</span>
+                        <span style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">1.0.0</span>
+                    </div>
+                    <div class="setting-item">
+                        <span style="color: var(--text-tertiary);">Network</span>
+                        <span style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">Solana</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persona Editor Screen -->
+            <div class="screen" id="persona-editor-screen">
+                <div class="header" style="padding: 16px; border-bottom: 1px solid var(--border-primary);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div onclick="closePersonaEditor()" style="cursor: pointer; padding: 8px; margin: -8px;">
+                                <span style="font-size: 24px; color: var(--text-secondary);">‹</span>
+                            </div>
+                            <div>
+                                <div class="title">PERSONA CREATOR</div>
+                                <div class="subtitle" style="font-size: 10px; color: var(--text-tertiary); margin-top: 2px;">CRAFT YOUR INTELLIGENCE</div>
+                            </div>
+                        </div>
+                        <div onclick="savePersona()" style="cursor: pointer; padding: 8px 16px; background: linear-gradient(135deg, var(--text-secondary) 0%, var(--text-tertiary) 100%); border-radius: 20px;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--bg-primary); font-weight: 600; letter-spacing: 1px;">SAVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="flex: 1; overflow-y: auto; padding: 16px;">
+                    <!-- Basic Information -->
+                    <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div class="section-title" style="margin-bottom: 12px;">IDENTITY</div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Name</div>
+                            <input type="text" placeholder="Enter persona name..." style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Symbol</div>
+                            <div style="display: flex; gap: 8px;">
+                                <div style="flex: 1; display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-active); border-radius: 8px; cursor: pointer; font-size: 20px;">◎</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">◈</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">◊</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">⬡</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">⬢</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">⧈</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">⟐</span>
+                                    <span style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; font-size: 20px;">∞</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Description</div>
+                            <textarea placeholder="Brief description of your persona..." style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 13px; resize: none; height: 60px;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- System Prompt -->
+                    <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div class="section-title" style="margin-bottom: 12px;">SYSTEM INSTRUCTIONS</div>
+                        <textarea placeholder="Enter the system prompt that defines your persona's behavior, knowledge, personality, and response style..." style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: none; height: 150px; line-height: 1.5;"></textarea>
+                        <div style="margin-top: 8px; font-size: 11px; color: var(--text-quaternary);">
+                            <span style="margin-right: 16px;">⊙ Be specific about expertise</span>
+                            <span style="margin-right: 16px;">⊙ Define communication style</span>
+                            <span>⊙ Set boundaries</span>
+                        </div>
+                    </div>
+
+                    <!-- Model Configuration -->
+                    <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div class="section-title" style="margin-bottom: 12px;">MODEL CONFIGURATION</div>
+
+                        <div style="margin-bottom: 16px;">
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Base Model</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div style="padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-active); border-radius: 8px; cursor: pointer; text-align: center;">
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-primary);">CLAUDE-3</div>
+                                </div>
+                                <div style="padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; text-align: center;">
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">GPT-4</div>
+                                </div>
+                                <div style="padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; text-align: center;">
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">GEMINI</div>
+                                </div>
+                                <div style="padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; cursor: pointer; text-align: center;">
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">LLAMA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Temperature</div>
+                                <div style="position: relative;">
+                                    <input type="range" min="0" max="100" value="70" style="width: 100%; background: var(--bg-primary); height: 36px; border-radius: 8px; -webkit-appearance: none; appearance: none;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">0.7</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Max Tokens</div>
+                                <input type="number" value="4096" style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: center;">
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Top P</div>
+                                <div style="position: relative;">
+                                    <input type="range" min="0" max="100" value="95" style="width: 100%; background: var(--bg-primary); height: 36px; border-radius: 8px; -webkit-appearance: none; appearance: none;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">0.95</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Frequency Penalty</div>
+                                <div style="position: relative;">
+                                    <input type="range" min="0" max="100" value="0" style="width: 100%; background: var(--bg-primary); height: 36px; border-radius: 8px; -webkit-appearance: none; appearance: none;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary);">0.0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Knowledge & Capabilities -->
+                    <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div class="section-title" style="margin-bottom: 12px;">KNOWLEDGE & CAPABILITIES</div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Knowledge Domains</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-active); border-radius: 20px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">⬢ Science</span>
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 20px; font-size: 12px; color: var(--text-tertiary); cursor: pointer;">◊ Philosophy</span>
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 20px; font-size: 12px; color: var(--text-tertiary); cursor: pointer;">⟐ Technology</span>
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-active); border-radius: 20px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">⧈ Creativity</span>
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 20px; font-size: 12px; color: var(--text-tertiary); cursor: pointer;">∞ Mathematics</span>
+                                <span style="padding: 6px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 20px; font-size: 12px; color: var(--text-tertiary); cursor: pointer;">⊕ Add custom...</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Special Instructions</div>
+                            <textarea placeholder="Additional guidelines, restrictions, or special behaviors..." style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: none; height: 80px;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Marketplace Settings -->
+                    <div style="background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 16px; padding: 16px; margin-bottom: 80px;">
+                        <div class="section-title" style="margin-bottom: 12px;">MARKETPLACE OPTIONS</div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">List in Marketplace</span>
+                            <div class="setting-toggle">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Price (USD)</div>
+                                <input type="number" placeholder="0.00" style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">License</div>
+                                <select style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                                    <option>Single Use</option>
+                                    <option>Multi Use</option>
+                                    <option>Unlimited</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Marketplace Tags</div>
+                            <input type="text" placeholder="science, research, analytical..." style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Button -->
+                <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); border-top: 1px solid var(--border-primary); padding: 12px;">
+                    <div style="display: flex; gap: 8px;">
+                        <div style="flex: 1; padding: 12px; background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%); border: 1px solid var(--border-secondary); border-radius: 8px; text-align: center; cursor: pointer;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary); letter-spacing: 1px;">⟲ TEST PERSONA</span>
+                        </div>
+                        <div onclick="savePersona()" style="flex: 1; padding: 12px; background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%); border-radius: 8px; text-align: center; cursor: pointer;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--bg-primary); font-weight: 600; letter-spacing: 1px;">✓ CREATE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchScreen('chat')">
+                    <div class="tab-icon">⬢</div>
+                    <div class="tab-label">Chat</div>
+                </div>
+                <div class="tab-item" onclick="switchScreen('memory')">
+                    <div class="tab-icon">⧈</div>
+                    <div class="tab-label">Memory</div>
+                </div>
+                <div class="tab-item" onclick="switchScreen('personas')">
+                    <div class="tab-icon">◈</div>
+                    <div class="tab-label">Personas</div>
+                </div>
+                <div class="tab-item" onclick="switchScreen('share')">
+                    <div class="tab-icon">⧉</div>
+                    <div class="tab-label">Share</div>
+                </div>
+                <div class="tab-item" onclick="switchScreen('settings')">
+                    <div class="tab-icon">⬡</div>
+                    <div class="tab-label">Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Constellation View Overlay -->
+        <div class="constellation-view" id="constellation-view">
+            <canvas id="constellation-canvas"></canvas>
+            <div class="constellation-header">
+                <div style="text-align: center;">
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--text-primary); letter-spacing: 4px;">CONSTELLATION</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-tertiary); letter-spacing: 2px; margin-top: 4px;">THOUGHT NETWORK VISUALIZATION</div>
+                </div>
+                <div class="constellation-close" onclick="closeConstellation()">
+                    <span style="font-size: 24px; color: var(--text-secondary);">×</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Context Menu -->
+        <div class="context-menu" id="context-menu">
+            <div class="context-menu-item" onclick="contextAction('fork')">
+                <span class="context-menu-icon">⫸</span>
+                <span>Fork this thought</span>
+            </div>
+            <div class="context-menu-item" onclick="contextAction('crystallize')">
+                <span class="context-menu-icon">◈</span>
+                <span>Crystallize to memory</span>
+            </div>
+            <div class="context-menu-item" onclick="contextAction('resonate')">
+                <span class="context-menu-icon">∿</span>
+                <span>Find resonant threads</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" onclick="contextAction('transmute')">
+                <span class="context-menu-icon">⟳</span>
+                <span>Transmute format</span>
+            </div>
+            <div class="context-menu-item" onclick="contextAction('share')">
+                <span class="context-menu-icon">⧉</span>
+                <span>Share fragment</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" onclick="contextAction('copy')">
+                <span class="context-menu-icon">⊕</span>
+                <span>Copy text</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById(screenName + '-screen').classList.add('active');
+
+            // Update tab bar
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        function openPersonaEditor() {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show persona editor
+            document.getElementById('persona-editor-screen').classList.add('active');
+
+            // Hide tab bar for full screen editor experience
+            document.querySelector('.tab-bar').style.display = 'none';
+        }
+
+        function closePersonaEditor() {
+            // Hide persona editor
+            document.getElementById('persona-editor-screen').classList.remove('active');
+
+            // Show personas screen
+            document.getElementById('personas-screen').classList.add('active');
+
+            // Show tab bar again
+            document.querySelector('.tab-bar').style.display = 'flex';
+        }
+
+        function savePersona() {
+            // Simulate saving persona
+            alert('Persona saved successfully!');
+            closePersonaEditor();
+        }
+
+        // Simple Resonance Animation
+        function animateResonance(value) {
+            const fillElement = document.querySelector('.resonance-fill');
+            const percentElement = document.querySelector('.resonance-percent');
+            if (fillElement && percentElement) {
+                fillElement.style.width = value + '%';
+                percentElement.textContent = value + '%';
+            }
+        }
+
+        // Smart Context Actions
+        let contextMenu = null;
+        let currentContextTarget = null;
+
+        function showContextMenu(event, target) {
+            event.preventDefault();
+            contextMenu = document.getElementById('context-menu');
+            currentContextTarget = target;
+
+            contextMenu.style.left = event.clientX + 'px';
+            contextMenu.style.top = event.clientY + 'px';
+            contextMenu.style.display = 'block';
+
+            setTimeout(() => {
+                contextMenu.classList.add('active');
+            }, 10);
+
+            document.addEventListener('click', hideContextMenu);
+        }
+
+        function hideContextMenu() {
+            if (contextMenu) {
+                contextMenu.classList.remove('active');
+                setTimeout(() => {
+                    contextMenu.style.display = 'none';
+                }, 200);
+            }
+            document.removeEventListener('click', hideContextMenu);
+        }
+
+        function contextAction(action) {
+            switch(action) {
+                case 'fork':
+                    alert('Forking conversation into new branch...');
+                    break;
+                case 'crystallize':
+                    alert('Saving to memory vault...');
+                    break;
+                case 'resonate':
+                    alert('Finding similar conversations...');
+                    break;
+                case 'transmute':
+                    alert('Converting format...');
+                    break;
+                case 'share':
+                    alert('Preparing to share...');
+                    break;
+                case 'copy':
+                    if (currentContextTarget) {
+                        navigator.clipboard.writeText(currentContextTarget.innerText);
+                        alert('Copied to clipboard');
+                    }
+                    break;
+            }
+            hideContextMenu();
+        }
+
+        // Voice Recording
+        let isRecording = false;
+        let recognition = null;
+
+        function toggleVoiceRecording() {
+            const voiceButton = document.querySelector('.voice-button');
+            const voiceIcon = document.getElementById('voice-icon');
+            const inputField = document.querySelector('.input-field');
+
+            if (!isRecording) {
+                // Start recording
+                isRecording = true;
+                voiceButton.classList.add('recording');
+                voiceIcon.textContent = '◉';
+
+                // Initialize speech recognition (simplified for preview)
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    recognition = new SpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = true;
+                    recognition.lang = 'en-US';
+
+                    recognition.onresult = (event) => {
+                        const transcript = Array.from(event.results)
+                            .map(result => result[0].transcript)
+                            .join('');
+                        inputField.value = transcript;
+                    };
+
+                    recognition.onerror = () => {
+                        stopRecording();
+                    };
+
+                    recognition.onend = () => {
+                        stopRecording();
+                    };
+
+                    recognition.start();
+                } else {
+                    // Fallback simulation
+                    setTimeout(() => {
+                        inputField.value = "This is a simulated voice input message";
+                        stopRecording();
+                    }, 2000);
+                }
+            } else {
+                stopRecording();
+            }
+        }
+
+        function stopRecording() {
+            const voiceButton = document.querySelector('.voice-button');
+            const voiceIcon = document.getElementById('voice-icon');
+
+            isRecording = false;
+            voiceButton.classList.remove('recording');
+            voiceIcon.textContent = '⊙';
+
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        // Gesture Navigation
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let currentScreen = 0;
+        const screens = ['chat', 'memory', 'personas', 'share', 'settings'];
+
+        function initGestureNavigation() {
+            const phoneScreen = document.querySelector('.phone-screen');
+
+            phoneScreen.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, false);
+
+            phoneScreen.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].screenX;
+                const touchEndY = e.changedTouches[0].screenY;
+                handleSwipe(touchStartX, touchEndX, touchStartY, touchEndY);
+            }, false);
+
+            // Mouse simulation for desktop
+            phoneScreen.addEventListener('mousedown', (e) => {
+                if (e.button === 0) { // Left click only
+                    touchStartX = e.screenX;
+                    touchStartY = e.screenY;
+                }
+            }, false);
+
+            phoneScreen.addEventListener('mouseup', (e) => {
+                if (e.button === 0) {
+                    const touchEndX = e.screenX;
+                    const touchEndY = e.screenY;
+                    handleSwipe(touchStartX, touchEndX, touchStartY, touchEndY);
+                }
+            }, false);
+        }
+
+        function handleSwipe(startX, endX, startY, endY) {
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            const threshold = 50;
+
+            // Horizontal swipe
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+                // Trigger swipe haptic pattern
+                haptics.trigger('swipe');
+
+                if (diffX > 0) {
+                    // Swipe left - next screen
+                    navigateScreen(1);
+                } else {
+                    // Swipe right - previous screen
+                    navigateScreen(-1);
+                }
+            }
+        }
+
+        function navigateScreen(direction) {
+            currentScreen = (currentScreen + direction + screens.length) % screens.length;
+            const screenName = screens[currentScreen];
+
+            // Update active screen with smooth transition
+            document.querySelectorAll('.screen').forEach((s, index) => {
+                s.classList.remove('active');
+                // Add transition effect
+                s.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+
+            const newScreen = document.getElementById(screenName + '-screen');
+            newScreen.classList.add('active');
+
+            // Update tab bar with haptic feedback
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            const newTab = document.querySelectorAll('.tab-item')[currentScreen];
+            newTab.classList.add('active');
+
+            // Enhanced haptic pattern for navigation completion
+            haptics.trigger('toggle', { element: newTab });
+        }
+
+        // Unused Particle Visualization (replaced with clean design)
+        class ResonanceVisualization {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.modelNodes = {
+                    claude: { x: 0.2, y: 0.5, active: true, color: 'rgba(228, 228, 228, 0.6)' },
+                    gpt: { x: 0.4, y: 0.5, active: true, color: 'rgba(160, 160, 160, 0.6)' },
+                    gemini: { x: 0.6, y: 0.5, active: true, color: 'rgba(184, 184, 184, 0.6)' },
+                    llama: { x: 0.8, y: 0.5, active: false, color: 'rgba(112, 112, 112, 0.6)' }
+                };
+                this.resonance = 0.75;
+                this.time = 0;
+
+                this.resize();
+                this.initParticles();
+                this.animate();
+
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * window.devicePixelRatio;
+                this.canvas.height = rect.height * window.devicePixelRatio;
+                this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                this.width = rect.width;
+                this.height = rect.height;
+            }
+
+            initParticles() {
+                this.particles = [];
+                const particleCount = 60;
+
+                for (let i = 0; i < particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.width,
+                        y: Math.random() * this.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 2 + 1,
+                        opacity: Math.random() * 0.5 + 0.2,
+                        model: Object.keys(this.modelNodes)[Math.floor(Math.random() * 4)]
+                    });
+                }
+            }
+
+            updateParticles() {
+                this.particles.forEach(p => {
+                    const node = this.modelNodes[p.model];
+                    if (!node.active) {
+                        p.opacity *= 0.98;
+                        p.vx *= 0.98;
+                        p.vy *= 0.98;
+                    } else {
+                        // Attraction to model node
+                        const targetX = node.x * this.width;
+                        const targetY = node.y * this.height;
+                        const dx = targetX - p.x;
+                        const dy = targetY - p.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist > 5) {
+                            const force = this.resonance * 0.02;
+                            p.vx += (dx / dist) * force;
+                            p.vy += (dy / dist) * force;
+                        }
+
+                        // Inter-particle resonance
+                        this.particles.forEach(p2 => {
+                            if (p !== p2 && this.modelNodes[p2.model].active) {
+                                const dx2 = p2.x - p.x;
+                                const dy2 = p2.y - p.y;
+                                const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+                                if (dist2 < 50 && dist2 > 0) {
+                                    const repulsion = (50 - dist2) / 50 * 0.02;
+                                    p.vx -= (dx2 / dist2) * repulsion;
+                                    p.vy -= (dy2 / dist2) * repulsion;
+                                }
+                            }
+                        });
+
+                        p.opacity = Math.min(0.8, p.opacity + 0.01);
+                    }
+
+                    // Update position
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Damping
+                    p.vx *= 0.98;
+                    p.vy *= 0.98;
+
+                    // Boundaries
+                    if (p.x < 0 || p.x > this.width) p.vx *= -0.8;
+                    if (p.y < 0 || p.y > this.height) p.vy *= -0.8;
+                    p.x = Math.max(0, Math.min(this.width, p.x));
+                    p.y = Math.max(0, Math.min(this.height, p.y));
+                });
+            }
+
+            drawConnections() {
+                this.ctx.strokeStyle = 'rgba(168, 168, 168, 0.1)';
+                this.ctx.lineWidth = 1;
+
+                this.particles.forEach(p1 => {
+                    this.particles.forEach(p2 => {
+                        if (p1 !== p2 && this.modelNodes[p1.model].active && this.modelNodes[p2.model].active) {
+                            const dist = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+                            if (dist < 40) {
+                                this.ctx.beginPath();
+                                this.ctx.moveTo(p1.x, p1.y);
+                                this.ctx.lineTo(p2.x, p2.y);
+                                this.ctx.globalAlpha = (40 - dist) / 40 * 0.3;
+                                this.ctx.stroke();
+                            }
+                        }
+                    });
+                });
+                this.ctx.globalAlpha = 1;
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+
+                // Draw connections
+                this.drawConnections();
+
+                // Draw particles
+                this.particles.forEach(p => {
+                    const node = this.modelNodes[p.model];
+                    this.ctx.fillStyle = node.color;
+                    this.ctx.globalAlpha = p.opacity;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+
+                // Draw model nodes
+                Object.entries(this.modelNodes).forEach(([model, node]) => {
+                    if (node.active) {
+                        const x = node.x * this.width;
+                        const y = node.y * this.height;
+
+                        // Glow effect
+                        const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, 20);
+                        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                        this.ctx.fillStyle = gradient;
+                        this.ctx.globalAlpha = Math.sin(this.time * 2) * 0.2 + 0.6;
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, 20, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                });
+
+                this.ctx.globalAlpha = 1;
+            }
+
+            animate() {
+                this.time += 0.01;
+                this.updateParticles();
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+
+            setModelActive(model, active) {
+                if (this.modelNodes[model]) {
+                    this.modelNodes[model].active = active;
+                    document.querySelector(`.resonance-model[data-model="${model}"]`).classList.toggle('active', active);
+                }
+            }
+
+            setResonance(value) {
+                this.resonance = value;
+                document.querySelector('.resonance-percent').textContent = Math.round(value * 100) + '%';
+            }
+        }
+
+        // Constellation Mode
+        class ConstellationVisualization {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.nodes = [];
+                this.connections = [];
+                this.camera = { x: 0, y: 0, zoom: 1 };
+                this.mouse = { x: 0, y: 0, down: false, dragStart: null };
+                this.selectedNode = null;
+                this.time = 0;
+
+                this.initData();
+                this.resize();
+                this.setupEvents();
+                this.animate();
+            }
+
+            initData() {
+                // Sample conversation nodes
+                const conversations = [
+                    { id: 1, title: 'Consciousness Exploration', x: 0, y: 0, messages: 14, resonance: 0.75 },
+                    { id: 2, title: 'Quantum Mechanics & Mind', x: 200, y: -100, messages: 8, resonance: 0.82 },
+                    { id: 3, title: 'Emergence Patterns', x: -150, y: 100, messages: 21, resonance: 0.68 },
+                    { id: 4, title: 'Collective Intelligence', x: 100, y: 150, messages: 12, resonance: 0.91 },
+                    { id: 5, title: 'Neural Correlates', x: -200, y: -50, messages: 17, resonance: 0.73 },
+                    { id: 6, title: 'Information Theory', x: 50, y: -180, messages: 9, resonance: 0.79 },
+                    { id: 7, title: 'Phenomenology', x: -100, y: -150, messages: 15, resonance: 0.65 },
+                    { id: 8, title: 'AI Consciousness', x: 180, y: 80, messages: 23, resonance: 0.88 }
+                ];
+
+                this.nodes = conversations.map(conv => ({
+                    ...conv,
+                    radius: Math.sqrt(conv.messages) * 8,
+                    vx: 0,
+                    vy: 0
+                }));
+
+                // Create connections based on resonance similarity
+                this.nodes.forEach((n1, i) => {
+                    this.nodes.forEach((n2, j) => {
+                        if (i < j && Math.abs(n1.resonance - n2.resonance) < 0.15) {
+                            this.connections.push({
+                                source: n1,
+                                target: n2,
+                                strength: 1 - Math.abs(n1.resonance - n2.resonance)
+                            });
+                        }
+                    });
+                });
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.centerX = this.canvas.width / 2;
+                this.centerY = this.canvas.height / 2;
+            }
+
+            setupEvents() {
+                window.addEventListener('resize', () => this.resize());
+
+                this.canvas.addEventListener('mousedown', (e) => {
+                    this.mouse.down = true;
+                    this.mouse.dragStart = { x: e.clientX - this.camera.x, y: e.clientY - this.camera.y };
+                });
+
+                this.canvas.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+
+                    if (this.mouse.down && this.mouse.dragStart) {
+                        this.camera.x = e.clientX - this.mouse.dragStart.x;
+                        this.camera.y = e.clientY - this.mouse.dragStart.y;
+                    }
+                });
+
+                this.canvas.addEventListener('mouseup', () => {
+                    this.mouse.down = false;
+                    this.mouse.dragStart = null;
+                });
+
+                this.canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const zoomDelta = e.deltaY > 0 ? 0.9 : 1.1;
+                    this.camera.zoom = Math.max(0.3, Math.min(3, this.camera.zoom * zoomDelta));
+                });
+            }
+
+            worldToScreen(x, y) {
+                return {
+                    x: (x * this.camera.zoom) + this.centerX + this.camera.x,
+                    y: (y * this.camera.zoom) + this.centerY + this.camera.y
+                };
+            }
+
+            draw() {
+                this.ctx.fillStyle = 'rgba(8, 8, 8, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw grid
+                this.ctx.strokeStyle = 'rgba(26, 26, 26, 0.5)';
+                this.ctx.lineWidth = 1;
+                const gridSize = 50 * this.camera.zoom;
+                const offsetX = (this.camera.x + this.centerX) % gridSize;
+                const offsetY = (this.camera.y + this.centerY) % gridSize;
+
+                for (let x = offsetX; x < this.canvas.width; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+
+                for (let y = offsetY; y < this.canvas.height; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+
+                // Draw connections
+                this.connections.forEach(conn => {
+                    const start = this.worldToScreen(conn.source.x, conn.source.y);
+                    const end = this.worldToScreen(conn.target.x, conn.target.y);
+
+                    this.ctx.strokeStyle = `rgba(168, 168, 168, ${conn.strength * 0.3})`;
+                    this.ctx.lineWidth = conn.strength * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(start.x, start.y);
+                    this.ctx.lineTo(end.x, end.y);
+                    this.ctx.stroke();
+                });
+
+                // Draw nodes
+                this.nodes.forEach(node => {
+                    const pos = this.worldToScreen(node.x, node.y);
+                    const radius = node.radius * this.camera.zoom;
+
+                    // Node glow
+                    const gradient = this.ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 2);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${node.resonance * 0.1})`);
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(pos.x, pos.y, radius * 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Node circle
+                    this.ctx.fillStyle = 'rgba(15, 15, 15, 0.9)';
+                    this.ctx.strokeStyle = `rgba(228, 228, 228, ${node.resonance})`;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+
+                    // Node label
+                    this.ctx.fillStyle = 'rgba(228, 228, 228, 0.9)';
+                    this.ctx.font = `${10 * this.camera.zoom}px 'JetBrains Mono', monospace`;
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(node.title, pos.x, pos.y + radius + 15 * this.camera.zoom);
+
+                    // Node stats
+                    this.ctx.fillStyle = 'rgba(160, 160, 160, 0.7)';
+                    this.ctx.font = `${8 * this.camera.zoom}px 'Inter', sans-serif`;
+                    this.ctx.fillText(`${node.messages} msgs • ${Math.round(node.resonance * 100)}%`, pos.x, pos.y + radius + 25 * this.camera.zoom);
+                });
+            }
+
+            animate() {
+                this.time += 0.01;
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        function openConstellation() {
+            const view = document.getElementById('constellation-view');
+            view.style.display = 'block';
+            setTimeout(() => {
+                view.classList.add('active');
+                const canvas = document.getElementById('constellation-canvas');
+                if (canvas && !canvas.constellation) {
+                    canvas.constellation = new ConstellationVisualization(canvas);
+                }
+            }, 10);
+        }
+
+        function closeConstellation() {
+            const view = document.getElementById('constellation-view');
+            view.classList.remove('active');
+            setTimeout(() => {
+                view.style.display = 'none';
+            }, 500);
+        }
+
+        // Premium Haptic Feedback System
+        class HapticEngine {
+            constructor() {
+                this.patterns = {
+                    tap: [10],
+                    success: [10, 30, 10],
+                    error: [50, 100, 50],
+                    longPress: [5, 10, 5, 10, 5],
+                    swipe: [3, 7, 3],
+                    toggle: [15],
+                    send: [5, 10, 5, 20],
+                    notification: [10, 20, 10, 20],
+                    selection: [3, 5, 3],
+                    drag: [2, 2, 2, 2, 2]
+                };
+
+                this.audioContext = null;
+                this.initAudioFallback();
+            }
+
+            initAudioFallback() {
+                // Create audio context for browsers without vibration API
+                if (!navigator.vibrate && window.AudioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            trigger(pattern, options = {}) {
+                const vibrationPattern = this.patterns[pattern] || this.patterns.tap;
+
+                // Try native vibration first
+                if (navigator.vibrate) {
+                    navigator.vibrate(vibrationPattern);
+                }
+                // Fallback to audio feedback
+                else if (this.audioContext) {
+                    this.playAudioFeedback(vibrationPattern);
+                }
+
+                // Add visual feedback
+                if (options.element) {
+                    this.addVisualFeedback(options.element, pattern);
+                }
+            }
+
+            playAudioFeedback(pattern) {
+                if (!this.audioContext) return;
+
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 200;
+                oscillator.type = 'sine';
+
+                const now = this.audioContext.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+
+                let time = now;
+                pattern.forEach((duration, index) => {
+                    if (index % 2 === 0) {
+                        gainNode.gain.setValueAtTime(0.1, time);
+                        gainNode.gain.setValueAtTime(0, time + duration / 1000);
+                    }
+                    time += duration / 1000;
+                });
+
+                oscillator.start(now);
+                oscillator.stop(time);
+            }
+
+            addVisualFeedback(element, pattern) {
+                // Add ripple effect
+                const ripple = document.createElement('div');
+                ripple.className = 'haptic-ripple';
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+                    pointer-events: none;
+                    transform: translate(-50%, -50%);
+                    animation: ripple-expand 0.6s ease-out;
+                `;
+
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 2;
+                ripple.style.width = `${size}px`;
+                ripple.style.height = `${size}px`;
+
+                element.style.position = 'relative';
+                element.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+
+                // Add subtle scale animation
+                element.classList.add('haptic-feedback');
+                setTimeout(() => element.classList.remove('haptic-feedback'), 200);
+            }
+
+            customPattern(vibrationArray) {
+                if (navigator.vibrate) {
+                    navigator.vibrate(vibrationArray);
+                } else if (this.audioContext) {
+                    this.playAudioFeedback(vibrationArray);
+                }
+            }
+        }
+
+        // Global haptic engine instance
+        const haptics = new HapticEngine();
+
+        // Add ripple animation to styles
+        const rippleStyle = document.createElement('style');
+        rippleStyle.textContent = `
+            @keyframes ripple-expand {
+                from {
+                    width: 0;
+                    height: 0;
+                    opacity: 1;
+                }
+                to {
+                    width: 100%;
+                    height: 100%;
+                    opacity: 0;
+                }
+            }
+
+            .haptic-feedback {
+                transform: scale(0.98) !important;
+                transition: transform 0.1s !important;
+            }
+
+            .haptic-ripple {
+                z-index: 999;
+            }
+        `;
+        document.head.appendChild(rippleStyle);
+
+        // Initialize all interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize simple resonance animation
+            setTimeout(() => {
+                animateResonance(75);
+            }, 500);
+
+            // Initialize gesture navigation
+            initGestureNavigation();
+
+            // Add long-press context menu to messages with haptic feedback
+            document.querySelectorAll('.message-bubble').forEach(bubble => {
+                let pressTimer;
+                let pressStartTime;
+
+                // Mouse events
+                bubble.addEventListener('mousedown', (e) => {
+                    if (e.button === 2) return; // Right click
+                    pressStartTime = Date.now();
+                    pressTimer = setTimeout(() => {
+                        haptics.trigger('longPress', { element: bubble });
+                        showContextMenu(e, bubble);
+                    }, 500);
+                });
+
+                bubble.addEventListener('mouseup', () => {
+                    clearTimeout(pressTimer);
+                    // Quick tap feedback
+                    if (Date.now() - pressStartTime < 200) {
+                        haptics.trigger('tap', { element: bubble });
+                    }
+                });
+
+                bubble.addEventListener('mouseleave', () => {
+                    clearTimeout(pressTimer);
+                });
+
+                // Touch events with pressure simulation
+                bubble.addEventListener('touchstart', (e) => {
+                    pressStartTime = Date.now();
+                    pressTimer = setTimeout(() => {
+                        haptics.trigger('longPress', { element: bubble });
+                        showContextMenu(e.touches[0], bubble);
+                    }, 500);
+                });
+
+                bubble.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                    // Quick tap feedback
+                    if (Date.now() - pressStartTime < 200) {
+                        haptics.trigger('tap', { element: bubble });
+                    }
+                });
+            });
+
+            // Enhanced haptic feedback for different UI elements
+            // Tab items - distinct toggle feel
+            document.querySelectorAll('.tab-item').forEach(element => {
+                element.addEventListener('click', () => {
+                    haptics.trigger('toggle', { element });
+                });
+            });
+
+            // Regular buttons - quick tap
+            document.querySelectorAll('button:not(.send-button)').forEach(element => {
+                element.addEventListener('click', () => {
+                    haptics.trigger('tap', { element });
+                });
+            });
+
+            // Model chips - selection feedback
+            document.querySelectorAll('.model-chip').forEach(element => {
+                element.addEventListener('click', () => {
+                    haptics.trigger('selection', { element });
+                });
+            });
+
+            // Settings toggles - distinct toggle pattern
+            document.querySelectorAll('.setting-toggle').forEach(element => {
+                element.addEventListener('click', () => {
+                    const isActive = element.classList.contains('active');
+                    haptics.trigger(isActive ? 'success' : 'toggle', { element });
+                });
+            });
+
+            // Memory cards - subtle selection
+            document.querySelectorAll('.memory-card, .conversation-card').forEach(element => {
+                element.addEventListener('click', () => {
+                    haptics.trigger('selection', { element });
+                });
+            });
+        });
+
+        // Toggle switches
+        document.querySelectorAll('.setting-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Format buttons
+        document.querySelectorAll('.format-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.format-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Enhanced Microinteractions
+        // Send button animation with premium haptic feedback
+        const sendButton = document.querySelector('.send-button');
+        const inputField = document.querySelector('.input-field');
+
+        if (sendButton) {
+            sendButton.addEventListener('click', function() {
+                if (inputField && inputField.value.trim()) {
+                    // Trigger send haptic pattern
+                    haptics.trigger('send', { element: this });
+
+                    this.classList.add('sending');
+                    setTimeout(() => {
+                        this.classList.remove('sending');
+                        this.classList.add('sent');
+
+                        // Success haptic when sent
+                        haptics.trigger('success', { element: this });
+
+                        inputField.value = '';
+                        setTimeout(() => {
+                            this.classList.remove('sent');
+                        }, 600);
+                    }, 300);
+                } else {
+                    // Error haptic for empty message
+                    haptics.trigger('error', { element: this });
+                }
+            });
+        }
+
+        // Haptic-like feedback for all interactive elements
+        document.querySelectorAll('button, .tab-item, .model-chip, .constellation-button, .resonance-model').forEach(element => {
+            element.addEventListener('mousedown', function() {
+                this.style.transition = 'transform 0.1s';
+                this.style.transform = 'scale(0.95)';
+            });
+
+            element.addEventListener('mouseup', function() {
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 50);
+            });
+
+            element.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Add subtle hover effects to cards
+        document.querySelectorAll('.memory-card, .conversation-card, .message-bubble').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s';
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
