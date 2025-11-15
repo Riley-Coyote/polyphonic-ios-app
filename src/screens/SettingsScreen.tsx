@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,67 +8,115 @@ import {
   Switch,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors, spacing, typography, borderRadius} from '../constants/theme';
 import {ModelConfig, UserPreferences} from '../types';
+import {apiKeyManager, aiService} from '../services/api/AIService';
+import {PROVIDERS} from '../constants/aiModels';
 
 export function SettingsScreen() {
   const [preferences, setPreferences] = useState<UserPreferences>({
-    defaultModels: ['claude-3', 'gpt-4'],
+    defaultModels: [],
     theme: 'dark',
     autoSaveToMemory: true,
     shareToCommmmunity: false,
     notificationsEnabled: true,
   });
 
-  const [modelConfigs, setModelConfigs] = useState<ModelConfig[]>([
-    {
-      id: 'claude-3',
-      apiKey: '',
-      endpoint: 'https://api.anthropic.com',
-      maxTokens: 4096,
-      temperature: 0.7,
-    },
-    {
-      id: 'gpt-4',
-      apiKey: '',
-      endpoint: 'https://api.openai.com',
-      maxTokens: 4096,
-      temperature: 0.7,
-    },
-    {
-      id: 'gemini',
-      apiKey: '',
-      endpoint: 'https://generativelanguage.googleapis.com',
-      maxTokens: 4096,
-      temperature: 0.7,
-    },
-    {
-      id: 'llama',
-      apiKey: '',
-      endpoint: 'https://api.meta.com',
-      maxTokens: 4096,
-      temperature: 0.7,
-    },
-  ]);
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [testingProviders, setTestingProviders] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  const updateModelConfig = (modelId: string, field: keyof ModelConfig, value: any) => {
-    setModelConfigs(prev =>
-      prev.map(config =>
-        config.id === modelId ? {...config, [field]: value} : config
-      )
-    );
+  // Load existing API keys on mount
+  useEffect(() => {
+    loadApiKeys();
+  }, []);
+
+  const loadApiKeys = async () => {
+    setIsLoading(true);
+    const keys: Record<string, string> = {};
+
+    for (const providerName of Object.keys(PROVIDERS)) {
+      const hasKey = await apiKeyManager.hasAPIKey(providerName);
+      if (hasKey) {
+        // Don't load the actual key for security, just show placeholder
+        keys[providerName] = '••••••••••••••••';
+      }
+    }
+
+    setApiKeys(keys);
+    setIsLoading(false);
   };
 
-  const testConnection = (modelId: string) => {
+  const saveApiKey = async (provider: string, key: string) => {
+    if (!key || key === '••••••••••••••••') {
+      // Don't save if it's empty or the placeholder
+      return;
+    }
+
+    try {
+      // Validate the key format
+      if (!apiKeyManager.validateAPIKey(provider, key)) {
+        Alert.alert('Invalid Key', `The API key format for ${provider} appears to be invalid.`);
+        return;
+      }
+
+      // Save the key
+      await apiKeyManager.setAPIKey(provider, key);
+
+      // Update UI to show placeholder
+      setApiKeys(prev => ({
+        ...prev,
+        [provider]: '••••••••••••••••',
+      }));
+
+      Alert.alert('Success', `${provider} API key saved securely.`);
+    } catch (error: any) {
+      Alert.alert('Error', `Failed to save API key: ${error.message}`);
+    }
+  };
+
+  const testConnection = async (provider: string) => {
+    setTestingProviders(prev => ({ ...prev, [provider]: true }));
+
+    try {
+      const isConnected = await aiService.testProviderConnection(provider);
+
+      if (isConnected) {
+        Alert.alert('Success', `${provider} API is connected and working!`);
+      } else {
+        Alert.alert('Connection Failed', `Could not connect to ${provider}. Please check your API key.`);
+      }
+    } catch (error: any) {
+      Alert.alert('Error', `Connection test failed: ${error.message}`);
+    } finally {
+      setTestingProviders(prev => ({ ...prev, [provider]: false }));
+    }
+  };
+
+  const removeApiKey = async (provider: string) => {
     Alert.alert(
-      'Testing Connection',
-      `Testing ${modelId.toUpperCase()} API connection...`,
-      [{text: 'OK'}]
+      'Remove API Key',
+      `Are you sure you want to remove the ${provider} API key?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            await apiKeyManager.removeAPIKey(provider);
+            setApiKeys(prev => {
+              const updated = { ...prev };
+              delete updated[provider];
+              return updated;
+            });
+          },
+        },
+      ]
     );
-    // In production, this would actually test the API
   };
 
   const exportData = () => {

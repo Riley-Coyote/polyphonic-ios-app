@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, spacing, typography, borderRadius} from '../constants/theme';
@@ -17,21 +18,31 @@ import {ModelSelector} from '../components/chat/ModelSelector';
 import {ResonanceIndicator} from '../components/chat/ResonanceIndicator';
 import {useConversationStore} from '../store/conversationStore';
 import {Message, AIModel} from '../types';
+import {aiService, apiKeyManager} from '../services/api/AIService';
+import {AI_MODELS} from '../constants/aiModels';
 
 export function ChatScreen() {
-  const [selectedModels, setSelectedModels] = useState<AIModel[]>(['claude-3', 'gpt-4']);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingMessages, setStreamingMessages] = useState<Record<string, string>>({});
   const flatListRef = useRef<FlatList>(null);
+  const activeStreams = useRef<any[]>([]);
 
   const {
     currentConversation,
     messages,
     addMessage,
+    updateMessage,
     calculateResonance,
   } = useConversationStore();
 
   const handleSendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || selectedModels.length === 0) {
+      if (selectedModels.length === 0) {
+        Alert.alert('No Models Selected', 'Please select at least one AI model to chat with.');
+      }
+      return;
+    }
 
     // Add user message
     const userMessage: Message = {
@@ -43,38 +54,154 @@ export function ChatScreen() {
 
     addMessage(userMessage);
     setIsLoading(true);
+    setStreamingMessages({});
 
-    // Simulate parallel AI responses
+    // Cancel any active streams
+    activeStreams.current.forEach(stream => stream?.cancel?.());
+    activeStreams.current = [];
+
     try {
-      // Here we would call the actual AI APIs
-      // For now, simulating responses
+      // Get selected model objects
+      const models = selectedModels
+        .map(modelId => AI_MODELS.find(m => m.id === modelId))
+        .filter(Boolean) as AIModel[];
+
+      // Check for missing API keys
+      const missingKeys: string[] = [];
+      for (const model of models) {
+        const hasKey = await apiKeyManager.hasAPIKey(model.provider.toLowerCase());
+        if (!hasKey) {
+          missingKeys.push(model.provider);
+        }
+      }
+
+      if (missingKeys.length > 0) {
+        Alert.alert(
+          'Missing API Keys',
+          `Please configure API keys for: ${[...new Set(missingKeys)].join(', ')}\n\nGo to Settings to add your API keys.`,
+          [{text: 'OK', onPress: () => setIsLoading(false)}]
+        );
+        return;
+      }
+
+      // Prepare message history
+      const messageHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+      messageHistory.push(userMessage);
+
+      // Stream from all selected models in parallel
+      const streamPromises = models.map(async (model) => {
+        const messageId = `${Date.now()}_${model.id}`;
+
+        // Create placeholder message
+        const aiMessage: Message = {
+          id: messageId,
+          role: 'assistant',
+          content: '',
+          model: model.id,
+          timestamp: new Date().toISOString(),
+        };
+        addMessage(aiMessage);
+
+        try {
+          // Get streaming response
+          const streamingResponse = await aiService.sendStreamingMessage(
+            model,
+            messageHistory,
+            {
+              temperature: 0.7,
+              maxTokens: 2048,
+              stream: true,
+            }
+          );
+
+          activeStreams.current.push(streamingResponse);
+
+          // Collect streamed content
+          let fullContent = '';
+          for await (const chunk of streamingResponse.stream) {
+            fullContent += chunk;
+
+            // Update the message with accumulated content
+            setStreamingMessages(prev => ({
+              ...prev,
+              [messageId]: fullContent,
+            }));
+
+            // Update message in store
+            updateMessage(messageId, {
+              content: fullContent,
+            });
+          }
+
+          // Final update with resonance
+          updateMessage(messageId, {
+            content: fullContent,
+            resonance: 0.5 + Math.random() * 0.5, // Calculate real resonance later
+          });
+
+        } catch (error: any) {
+          console.error(`Error with ${model.name}:`, error);
+
+          // Update message with error
+          updateMessage(messageId, {
+            content: `Error: ${error.message || 'Failed to get response'}`,
+          });
+        }
+      });
+
+      // Wait for all streams to complete
+      await Promise.allSettled(streamPromises);
+
+      // Calculate resonance after all responses
       setTimeout(() => {
-        selectedModels.forEach((model, index) => {
-          setTimeout(() => {
-            const aiMessage: Message = {
-              id: `${Date.now()}_${model}`,
-              role: 'assistant',
-              content: `This is a response from ${model.toUpperCase()}. I can see the other models' responses and build upon them.`,
-              model,
-              timestamp: new Date().toISOString(),
-              resonance: Math.random() * 0.3 + 0.7, // Random resonance between 0.7-1.0
-            };
-            addMessage(aiMessage);
-          }, index * 500); // Stagger responses slightly
-        });
+        calculateResonance();
+      }, 100);
 
-        setIsLoading(false);
-
-        // Calculate overall resonance
-        setTimeout(() => {
-          calculateResonance();
-        }, selectedModels.length * 500 + 100);
-      }, 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      Alert.alert('Error', error.message || 'Failed to send message');
+    } finally {
       setIsLoading(false);
+      setStreamingMessages({});
+      activeStreams.current = [];
     }
-  }, [selectedModels, isLoading, addMessage, calculateResonance]);
+  }, [selectedModels, isLoading, messages, addMessage, updateMessage, calculateResonance]);
+
+  // Cleanup streams on unmount
+  useEffect(() => {
+    return () => {
+      activeStreams.current.forEach(stream => stream?.cancel?.());
+      activeStreams.current = [];
+    };
+  }, []);
+
+  // Check for configured API keys on mount
+  useEffect(() => {
+    const checkAPIKeys = async () => {
+      const providers = ['openai', 'anthropic'];
+      const configured: string[] = [];
+
+      for (const provider of providers) {
+        const hasKey = await apiKeyManager.hasAPIKey(provider);
+        if (hasKey) {
+          configured.push(provider);
+        }
+      }
+
+      if (configured.length === 0) {
+        Alert.alert(
+          'Welcome to Polyphonic',
+          'To start chatting with AI models, please configure your API keys in Settings.',
+          [{text: 'OK'}]
+        );
+      }
+    };
+
+    checkAPIKeys();
+  }, []);
 
   const renderMessage = ({item}: {item: Message}) => (
     <MessageBubble message={item} />
