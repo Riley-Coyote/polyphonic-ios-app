@@ -679,9 +679,9 @@
 </head>
 <body>
     <!-- Loading Screen -->
-    <div class="loading-screen" style="position: fixed; inset: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeOut 1s ease 1.5s forwards;">
+    <div class="loading-screen" id="loadingScreen" style="position: fixed; inset: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;">
         <div style="text-align: center;">
-            <div style="font-family: var(--font-mono); font-size: var(--text-5xl); letter-spacing: 8px; color: var(--white); margin-bottom: var(--space-lg); animation: shimmer 2s infinite;">✦</div>
+            <div style="font-family: var(--font-mono); font-size: var(--text-5xl); letter-spacing: 8px; color: var(--white); margin-bottom: var(--space-lg);">✦</div>
             <div style="font-family: var(--font-mono); font-size: var(--text-lg); letter-spacing: 4px; color: var(--gray-400);">LOADING CONSCIOUSNESS</div>
         </div>
     </div>
@@ -1714,6 +1714,20 @@
     </div>
 
     <script>
+        // Remove loading screen after page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.style.visibility = 'hidden';
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                    }, 500);
+                }
+            }, 800);
+        });
+
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
