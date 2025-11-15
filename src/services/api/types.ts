@@ -11,6 +11,15 @@ export interface Message {
   function_call?: any;
 }
 
+export type ReasoningEffort =
+  // GPT-5.1 values
+  | 'none'    // Default for GPT-5.1, no reasoning
+  | 'low'     // Moderate reasoning
+  | 'medium'  // Significant reasoning
+  | 'high'    // Maximum reasoning
+  // GPT-5 (non-5.1) values
+  | 'minimal'; // Minimal reasoning for GPT-5
+
 export interface ChatCompletionRequest {
   model: string;
   messages: Message[];
@@ -22,6 +31,7 @@ export interface ChatCompletionRequest {
   presence_penalty?: number;
   stop?: string | string[];
   n?: number;
+  reasoning_effort?: ReasoningEffort;
 }
 
 export interface ChatCompletionResponse {

@@ -68,7 +68,7 @@ export class OpenAIProvider extends BaseAPIProvider {
   }
 
   /**
-   * Override for o1 models and thinking models which have special requirements
+   * Override for o1 models and reasoning models which have special requirements
    */
   async createChatCompletion(
     messages: Message[],
@@ -87,26 +87,27 @@ export class OpenAIProvider extends BaseAPIProvider {
       return super.createChatCompletion(messages, model, filteredOptions);
     }
 
-    // GPT-5.1 and GPT-5 thinking models may have special parameters
-    if (model.id.includes('thinking')) {
-      const thinkingOptions = {
+    // GPT-5.1 models (including thinking variants)
+    if (model.id.startsWith('gpt-5.1')) {
+      const gpt51Options = {
         ...options,
-        // GPT-5.1 thinking models support extended reasoning mode
-        ...(model.id.includes('5.1') && {
-          reasoning_effort: 'extended', // Can be 'standard', 'extended', or 'deep'
-        }),
+        // GPT-5.1 reasoning effort: 'none' (default), 'low', 'medium', 'high'
+        // Default is 'none' for latency-sensitive workloads
+        // Use 'low'/'medium' for complex tasks, 'high' when intelligence > speed
+        reasoning_effort: options?.reasoning_effort || 'none',
       };
-      return super.createChatCompletion(messages, model, thinkingOptions);
+      return super.createChatCompletion(messages, model, gpt51Options);
     }
 
-    // GPT-5.1 models with enhanced safety
-    if (model.id.startsWith('gpt-5.1')) {
-      const enhancedOptions = {
+    // GPT-5 models (non-5.1, including thinking variants)
+    if (model.id.startsWith('gpt-5')) {
+      const gpt5Options = {
         ...options,
-        // Enable enhanced safety guardrails for GPT-5.1
-        safety_level: 'enhanced',
+        // GPT-5 reasoning effort: 'minimal' or 'medium' (default)
+        // 'minimal' for latency optimization, 'medium' for balanced reasoning
+        reasoning_effort: options?.reasoning_effort || 'medium',
       };
-      return super.createChatCompletion(messages, model, enhancedOptions);
+      return super.createChatCompletion(messages, model, gpt5Options);
     }
 
     return super.createChatCompletion(messages, model, options);

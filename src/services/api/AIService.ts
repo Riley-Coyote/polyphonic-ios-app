@@ -25,6 +25,7 @@ export interface AIServiceOptions {
   topP?: number;
   stream?: boolean;
   systemPrompt?: string;
+  reasoningEffort?: 'none' | 'low' | 'medium' | 'high' | 'minimal';
 }
 
 export interface AIResponse {
@@ -82,6 +83,7 @@ class AIService {
         temperature: options?.temperature,
         max_tokens: options?.maxTokens,
         top_p: options?.topP,
+        reasoning_effort: options?.reasoningEffort,
       });
 
       return {
@@ -129,6 +131,7 @@ class AIService {
       temperature: options?.temperature,
       max_tokens: options?.maxTokens,
       top_p: options?.topP,
+      reasoning_effort: options?.reasoningEffort,
     });
 
     // Wrap the stream to handle cancellation
