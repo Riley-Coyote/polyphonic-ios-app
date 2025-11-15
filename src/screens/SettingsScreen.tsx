@@ -16,8 +16,15 @@ import {colors, spacing, typography, borderRadius} from '../constants/theme';
 import {ModelConfig, UserPreferences} from '../types';
 import {apiKeyManager, aiService} from '../services/api/AIService';
 import {PROVIDERS} from '../constants/aiModels';
+import {ReasoningEffortSelector} from '../components/chat/ReasoningEffortSelector';
+import {useConversationStore} from '../store/conversationStore';
 
 export function SettingsScreen() {
+  const {
+    globalReasoningEffort,
+    setGlobalReasoningEffort,
+  } = useConversationStore();
+
   const [preferences, setPreferences] = useState<UserPreferences>({
     defaultModels: [],
     theme: 'dark',
@@ -260,6 +267,22 @@ export function SettingsScreen() {
           </View>
         </View>
 
+        {/* Reasoning Effort (GPT-5/5.1) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>REASONING EFFORT</Text>
+          <Text style={styles.sectionDescription}>
+            Global default for GPT-5 and GPT-5.1 models. Can be overridden per conversation.
+          </Text>
+
+          <ReasoningEffortSelector
+            value={globalReasoningEffort}
+            onChange={setGlobalReasoningEffort}
+            modelType="auto"
+            showDescription={true}
+            compact={false}
+          />
+        </View>
+
         {/* Data Management */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>DATA MANAGEMENT</Text>
@@ -339,6 +362,13 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.mono,
     fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  sectionDescription: {
+    fontFamily: typography.fontFamily.system,
+    fontSize: typography.fontSize.sm,
+    color: colors.textTertiary,
     letterSpacing: 2,
     marginBottom: spacing.md,
   },

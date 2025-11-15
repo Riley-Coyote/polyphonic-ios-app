@@ -16,6 +16,7 @@ import {ChatInput} from '../components/chat/ChatInput';
 import {MessageBubble} from '../components/chat/MessageBubble';
 import {ModelSelector} from '../components/chat/ModelSelector';
 import {ResonanceIndicator} from '../components/chat/ResonanceIndicator';
+import {ReasoningEffortSelector} from '../components/chat/ReasoningEffortSelector';
 import {useConversationStore} from '../store/conversationStore';
 import {Message, AIModel} from '../types';
 import {aiService, apiKeyManager} from '../services/api/AIService';
@@ -34,7 +35,11 @@ export function ChatScreen() {
     addMessage,
     updateMessage,
     calculateResonance,
+    getReasoningEffort,
+    setConversationReasoningEffort,
   } = useConversationStore();
+
+  const reasoningEffort = getReasoningEffort(currentConversation?.id);
 
   const handleSendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading || selectedModels.length === 0) {
@@ -106,7 +111,7 @@ export function ChatScreen() {
         addMessage(aiMessage);
 
         try {
-          // Get streaming response
+          // Get streaming response with reasoning effort
           const streamingResponse = await aiService.sendStreamingMessage(
             model,
             messageHistory,
@@ -114,6 +119,7 @@ export function ChatScreen() {
               temperature: 0.7,
               maxTokens: 2048,
               stream: true,
+              reasoningEffort: reasoningEffort,
             }
           );
 
@@ -218,6 +224,25 @@ export function ChatScreen() {
         selectedModels={selectedModels}
         onSelectModels={setSelectedModels}
       />
+
+      {/* Reasoning Effort Control - only show for GPT-5/5.1 models */}
+      {selectedModels.some(id => id.startsWith('gpt-5')) && (
+        <ReasoningEffortSelector
+          value={reasoningEffort}
+          onChange={(effort) => {
+            if (currentConversation?.id) {
+              setConversationReasoningEffort(currentConversation.id, effort);
+            }
+          }}
+          modelType={
+            selectedModels.some(id => id.startsWith('gpt-5.1'))
+              ? 'gpt-5.1'
+              : 'gpt-5'
+          }
+          compact={true}
+          showDescription={false}
+        />
+      )}
 
       <ResonanceIndicator resonance={currentConversation?.resonance || 0} />
 

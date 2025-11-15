@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {persist, createJSONStorage} from 'zustand/middleware';
 import {Message, Conversation, AIModel, Memory} from '../types';
 
+export type ReasoningEffort = 'none' | 'low' | 'medium' | 'high' | 'minimal';
+
 interface ConversationState {
   conversations: Conversation[];
   currentConversationId: string | null;
@@ -11,6 +13,10 @@ interface ConversationState {
   memories: Memory[];
   isLoading: boolean;
   error: string | null;
+
+  // Reasoning effort settings
+  globalReasoningEffort: ReasoningEffort;
+  conversationReasoningEffort: Record<string, ReasoningEffort>; // Per-conversation overrides
 
   // Actions
   createConversation: (title?: string, models?: AIModel[]) => Conversation;
@@ -21,6 +27,11 @@ interface ConversationState {
   calculateResonance: () => number;
   clearCurrentConversation: () => void;
   deleteConversation: (conversationId: string) => void;
+
+  // Reasoning effort actions
+  setGlobalReasoningEffort: (effort: ReasoningEffort) => void;
+  setConversationReasoningEffort: (conversationId: string, effort: ReasoningEffort) => void;
+  getReasoningEffort: (conversationId?: string) => ReasoningEffort;
 
   // Memory actions
   saveToMemory: (conversationId: string, type: 'personal' | 'community') => Promise<void>;
@@ -79,6 +90,10 @@ export const useConversationStore = create<ConversationState>()(
       memories: [],
       isLoading: false,
       error: null,
+
+      // Reasoning effort defaults
+      globalReasoningEffort: 'none', // Default for GPT-5.1
+      conversationReasoningEffort: {},
 
       createConversation: (title, models = ['claude-3', 'gpt-4']) => {
         const conversation: Conversation = {
@@ -244,6 +259,30 @@ export const useConversationStore = create<ConversationState>()(
 
           return {conversations: updatedConversations};
         });
+      },
+
+      // Reasoning effort actions
+      setGlobalReasoningEffort: (effort) => {
+        set({ globalReasoningEffort: effort });
+      },
+
+      setConversationReasoningEffort: (conversationId, effort) => {
+        set(state => ({
+          conversationReasoningEffort: {
+            ...state.conversationReasoningEffort,
+            [conversationId]: effort,
+          },
+        }));
+      },
+
+      getReasoningEffort: (conversationId) => {
+        const state = get();
+        // First check for conversation-specific override
+        if (conversationId && state.conversationReasoningEffort[conversationId]) {
+          return state.conversationReasoningEffort[conversationId];
+        }
+        // Fall back to global setting
+        return state.globalReasoningEffort;
       },
 
       saveToMemory: async (conversationId, type) => {
