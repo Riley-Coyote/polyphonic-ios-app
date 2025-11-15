@@ -58,20 +58,44 @@ export function MessageBubble({message, onLongPress}: MessageBubbleProps) {
     }
   };
 
+  // Format timestamp for accessibility
+  const getAccessibilityTime = () => {
+    const date = new Date(message.timestamp);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   return (
     <Animated.View
       style={[
         styles.container,
         isUser ? styles.userContainer : styles.assistantContainer,
         {opacity: fadeAnim},
-      ]}>
+      ]}
+      accessible={false} // Let TouchableOpacity handle accessibility
+    >
       <TouchableOpacity
         onLongPress={onLongPress}
         activeOpacity={0.8}
         style={[
           styles.bubble,
           isUser ? styles.userBubble : styles.assistantBubble,
-        ]}>
+        ]}
+        // Accessibility props
+        accessible={true}
+        accessibilityLabel={
+          isUser
+            ? `Your message at ${getAccessibilityTime()}: ${message.content}`
+            : `${message.model || 'AI'} response at ${getAccessibilityTime()}: ${message.content}`
+        }
+        accessibilityHint={onLongPress ? "Hold to show message options" : undefined}
+        accessibilityRole="text"
+        accessibilityState={{
+          selected: false,
+        }}>
         {!isUser && message.model && (
           <View style={styles.modelIndicator}>
             <Icon

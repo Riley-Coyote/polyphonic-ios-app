@@ -32,7 +32,10 @@ export function ChatInput({
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <View
+        style={styles.inputContainer}
+        accessible={false} // Let children handle accessibility
+      >
         <TextInput
           style={styles.input}
           value={message}
@@ -45,6 +48,13 @@ export function ChatInput({
           keyboardAppearance="dark"
           returnKeyType="send"
           onSubmitEditing={handleSend}
+          // Accessibility props for VoiceOver
+          accessible={true}
+          accessibilityLabel="Message input"
+          accessibilityHint="Type your message here. Double tap to edit."
+          accessibilityRole="text"
+          accessibilityValue={{text: message || 'Empty'}}
+          accessibilityState={{disabled}}
         />
         <TouchableOpacity
           style={[
@@ -52,7 +62,22 @@ export function ChatInput({
             (!message.trim() || disabled) && styles.sendButtonDisabled,
           ]}
           onPress={handleSend}
-          disabled={!message.trim() || disabled}>
+          disabled={!message.trim() || disabled}
+          // Accessibility props
+          accessible={true}
+          accessibilityLabel="Send message"
+          accessibilityHint={
+            !message.trim()
+              ? "Type a message first"
+              : disabled
+              ? "Waiting for response"
+              : "Double tap to send your message"
+          }
+          accessibilityRole="button"
+          accessibilityState={{
+            disabled: !message.trim() || disabled
+          }}
+        >
           <Icon
             name="send"
             size={20}
@@ -62,17 +87,40 @@ export function ChatInput({
       </View>
 
       <View style={styles.toolbar}>
-        <TouchableOpacity style={styles.toolButton}>
+        <TouchableOpacity
+          style={styles.toolButton}
+          accessible={true}
+          accessibilityLabel="Attach file"
+          accessibilityRole="button"
+          accessibilityHint="Double tap to attach a file"
+        >
           <Icon name="paperclip" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.toolButton}>
+        <TouchableOpacity
+          style={styles.toolButton}
+          accessible={true}
+          accessibilityLabel="Add image"
+          accessibilityRole="button"
+          accessibilityHint="Double tap to add an image"
+        >
           <Icon name="image" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.toolButton}>
+        <TouchableOpacity
+          style={styles.toolButton}
+          accessible={true}
+          accessibilityLabel="Add code snippet"
+          accessibilityRole="button"
+          accessibilityHint="Double tap to add a code snippet"
+        >
           <Icon name="code" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
         <View style={styles.spacer} />
-        <Text style={styles.charCount}>
+        <Text
+          style={styles.charCount}
+          accessible={true}
+          accessibilityLabel={`${message.length} of 4000 characters used`}
+          accessibilityRole="text"
+        >
           {message.length}/4000
         </Text>
       </View>

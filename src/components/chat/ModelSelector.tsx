@@ -88,19 +88,34 @@ export function ModelSelector({
         <TouchableOpacity
           onPress={handlePress}
           style={styles.selectorButton}
-          activeOpacity={0.8}>
+          activeOpacity={0.8}
+          // Accessibility props
+          accessible={true}
+          accessibilityLabel={
+            selectedModels.length > 0
+              ? `Selected models: ${selectedModels.map(id =>
+                  AVAILABLE_MODELS.find(m => m.id === id)?.name
+                ).join(', ')}`
+              : 'No models selected'
+          }
+          accessibilityHint="Double tap to open model selection menu"
+          accessibilityRole="button"
+          accessibilityState={{expanded: isModalVisible}}
+        >
           <Animated.View
             style={[
               styles.buttonContent,
               {transform: [{scale: scaleAnim}]},
-            ]}>
+            ]}
+            accessible={false} // Let parent handle accessibility
+          >
             <Text style={styles.label}>MODELS</Text>
             <View style={styles.selectedModelsContainer}>
               {selectedModels.length > 0 ? (
                 selectedModels.map(modelId => {
                   const model = AVAILABLE_MODELS.find(m => m.id === modelId);
                   return model ? (
-                    <View key={modelId} style={styles.modelChip}>
+                    <View key={modelId} style={styles.modelChip} importantForAccessibility="no">
                       <Icon name={model.icon} size={12} color={colors.textSecondary} />
                       <Text style={styles.modelChipText}>{model.name}</Text>
                     </View>
@@ -123,20 +138,45 @@ export function ModelSelector({
         visible={isModalVisible}
         transparent
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setModalVisible(false)}
+        accessible={true}
+        accessibilityViewIsModal={true}
+      >
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setModalVisible(false)}>
-          <View style={styles.modalContent}>
+          onPress={() => setModalVisible(false)}
+          accessible={true}
+          accessibilityLabel="Close model selection"
+          accessibilityRole="button"
+          accessibilityHint="Tap outside to close"
+        >
+          <View
+            style={styles.modalContent}
+            accessible={false} // Let children handle accessibility
+          >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Models</Text>
-              <Text style={styles.modalSubtitle}>
+              <Text
+                style={styles.modalTitle}
+                accessible={true}
+                accessibilityRole="header"
+                accessibilityLevel={1}
+              >
+                Select Models
+              </Text>
+              <Text
+                style={styles.modalSubtitle}
+                accessible={true}
+                accessibilityRole="text"
+              >
                 Choose up to {maxModels} models for parallel processing
               </Text>
             </View>
 
-            <ScrollView style={styles.modelList}>
+            <ScrollView
+              style={styles.modelList}
+              accessible={false} // Let children handle accessibility
+            >
               {AVAILABLE_MODELS.map(model => {
                 const isSelected = selectedModels.includes(model.id);
                 const isDisabled = !isSelected && selectedModels.length >= maxModels;
@@ -150,9 +190,25 @@ export function ModelSelector({
                       isDisabled && styles.modelOptionDisabled,
                     ]}
                     onPress={() => toggleModel(model.id)}
-                    disabled={isDisabled}>
-                    <View style={styles.modelInfo}>
-                      <View style={styles.modelIconContainer}>
+                    disabled={isDisabled}
+                    // Accessibility props
+                    accessible={true}
+                    accessibilityLabel={`${model.name}: ${model.description}`}
+                    accessibilityHint={
+                      isDisabled
+                        ? `Maximum of ${maxModels} models reached. Deselect another model first.`
+                        : isSelected
+                        ? "Double tap to deselect this model"
+                        : "Double tap to select this model"
+                    }
+                    accessibilityRole="checkbox"
+                    accessibilityState={{
+                      checked: isSelected,
+                      disabled: isDisabled,
+                    }}
+                  >
+                    <View style={styles.modelInfo} importantForAccessibility="no">
+                      <View style={styles.modelIconContainer} importantForAccessibility="no">
                         <Icon
                           name={model.icon}
                           size={20}
@@ -165,7 +221,7 @@ export function ModelSelector({
                           }
                         />
                       </View>
-                      <View style={styles.modelDetails}>
+                      <View style={styles.modelDetails} importantForAccessibility="no">
                         <Text
                           style={[
                             styles.modelName,
@@ -182,7 +238,7 @@ export function ModelSelector({
                         </Text>
                       </View>
                     </View>
-                    <View style={styles.checkboxContainer}>
+                    <View style={styles.checkboxContainer} importantForAccessibility="no">
                       <View
                         style={[
                           styles.checkbox,
@@ -200,7 +256,12 @@ export function ModelSelector({
 
             <TouchableOpacity
               style={styles.modalCloseButton}
-              onPress={() => setModalVisible(false)}>
+              onPress={() => setModalVisible(false)}
+              accessible={true}
+              accessibilityLabel="Done selecting models"
+              accessibilityRole="button"
+              accessibilityHint="Double tap to close model selection"
+            >
               <Text style={styles.modalCloseText}>Done</Text>
             </TouchableOpacity>
           </View>

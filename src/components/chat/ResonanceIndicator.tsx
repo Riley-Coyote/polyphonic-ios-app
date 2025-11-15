@@ -81,13 +81,43 @@ export function ResonanceIndicator({
     outputRange: [0.3, 0.6, 1],
   });
 
+  const getAccessibilityDescription = () => {
+    const level = getResonanceLevel();
+    const percent = Math.round(resonance * 100);
+
+    const levelDescriptions: Record<string, string> = {
+      'HARMONIC': 'Models are in perfect alignment',
+      'ALIGNED': 'Models show strong agreement',
+      'COHERENT': 'Models are moderately aligned',
+      'DIVERGENT': 'Models show some disagreement',
+      'CHAOTIC': 'Models have significant differences'
+    };
+
+    return `Resonance level: ${level}, ${percent} percent. ${levelDescriptions[level]}`;
+  };
+
   return (
     <Animated.View
       style={[
         styles.container,
         {transform: [{scale: pulseAnim}]},
-      ]}>
-      <View style={styles.barContainer}>
+      ]}
+      // Accessibility props
+      accessible={true}
+      accessibilityLabel={getAccessibilityDescription()}
+      accessibilityRole="progressbar"
+      accessibilityValue={{
+        min: 0,
+        max: 100,
+        now: Math.round(resonance * 100),
+        text: `${Math.round(resonance * 100)} percent ${getResonanceLevel()}`
+      }}
+      accessibilityHint="Shows how aligned the AI model responses are"
+    >
+      <View
+        style={styles.barContainer}
+        importantForAccessibility="no"
+      >
         <View style={styles.barBackground}>
           <Animated.View
             style={[
@@ -117,7 +147,7 @@ export function ResonanceIndicator({
       </View>
 
       {showLabel && (
-        <View style={styles.labelContainer}>
+        <View style={styles.labelContainer} importantForAccessibility="no">
           <Text style={styles.levelText}>{getResonanceLevel()}</Text>
           <Text style={styles.percentText}>{Math.round(resonance * 100)}%</Text>
         </View>
