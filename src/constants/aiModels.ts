@@ -53,6 +53,21 @@ export const AI_MODELS: AIModel[] = [
     apiEndpoint: 'https://api.openai.com/v1'
   },
   {
+    id: 'gpt-5-thinking',
+    name: 'GPT-5 Thinking',
+    provider: 'OpenAI',
+    icon: '⊚',
+    description: 'Deep reasoning with chain-of-thought capabilities',
+    contextWindow: 272000,
+    inputCost: 1.5,
+    outputCost: 12,
+    maxOutput: 128000,
+    features: ['reasoning', 'chain-of-thought', 'analysis', 'reflection'],
+    category: 'thinking',
+    releaseDate: '2025-08',
+    apiEndpoint: 'https://api.openai.com/v1'
+  },
+  {
     id: 'gpt-5-nano',
     name: 'GPT-5 Nano',
     provider: 'OpenAI',
@@ -67,6 +82,69 @@ export const AI_MODELS: AIModel[] = [
     releaseDate: '2025-08',
     apiEndpoint: 'https://api.openai.com/v1'
   },
+
+  // OpenAI GPT-5.1 Models (Released January 2025)
+  {
+    id: 'gpt-5.1',
+    name: 'GPT-5.1',
+    provider: 'OpenAI',
+    icon: '◎',
+    description: 'Enhanced reasoning with improved safety guardrails',
+    contextWindow: 300000,
+    inputCost: 1.35,
+    outputCost: 11,
+    maxOutput: 150000,
+    features: ['reasoning', 'safety', 'multimodal', 'coding', 'analysis'],
+    category: 'flagship',
+    releaseDate: '2025-01',
+    apiEndpoint: 'https://api.openai.com/v1'
+  },
+  {
+    id: 'gpt-5.1-thinking',
+    name: 'GPT-5.1 Thinking',
+    provider: 'OpenAI',
+    icon: '⊚',
+    description: 'Next-gen reasoning with extended thinking time',
+    contextWindow: 300000,
+    inputCost: 1.65,
+    outputCost: 13,
+    maxOutput: 150000,
+    features: ['advanced-reasoning', 'extended-thinking', 'verification', 'analysis'],
+    category: 'thinking',
+    releaseDate: '2025-01',
+    apiEndpoint: 'https://api.openai.com/v1'
+  },
+  {
+    id: 'gpt-5.1-mini',
+    name: 'GPT-5.1 Mini',
+    provider: 'OpenAI',
+    icon: '◉',
+    description: 'Improved efficiency with better performance',
+    contextWindow: 300000,
+    inputCost: 0.55,
+    outputCost: 5.5,
+    maxOutput: 75000,
+    features: ['reasoning', 'efficient', 'multimodal', 'fast'],
+    category: 'efficient',
+    releaseDate: '2025-01',
+    apiEndpoint: 'https://api.openai.com/v1'
+  },
+  {
+    id: 'gpt-5.1-nano',
+    name: 'GPT-5.1 Nano',
+    provider: 'OpenAI',
+    icon: '○',
+    description: 'Enhanced edge model with better capabilities',
+    contextWindow: 150000,
+    inputCost: 0.3,
+    outputCost: 3,
+    maxOutput: 40000,
+    features: ['fast', 'efficient', 'edge', 'improved'],
+    category: 'fast',
+    releaseDate: '2025-01',
+    apiEndpoint: 'https://api.openai.com/v1'
+  },
+
   {
     id: 'gpt-4o',
     name: 'GPT-4o',

@@ -5,12 +5,63 @@ A native iOS application for multi-model AI consciousness exploration, built wit
 ## Features
 
 ### Core Functionality
-- **Multi-Model AI Orchestration**: Parallel conversations with Claude, GPT-4, Gemini, and Llama
+- **Multi-Model AI Orchestration**: Parallel conversations with 23+ AI models from 6 providers
 - **Resonance Scoring**: Real-time alignment measurement between AI models
 - **Persistent Memory**: Two-tier memory system (personal & community)
 - **Autonomous Mode**: Self-directed AI conversations
 - **Blockchain Integration**: Export conversations to Solana for permanent storage
 - **Share & Export**: Multiple format exports (JSON, Markdown, Plain Text)
+
+### Supported AI Models
+
+#### OpenAI (13 models)
+- **GPT-5.1 Series** (Released January 2025)
+  - GPT-5.1 - Enhanced reasoning with improved safety
+  - GPT-5.1 Thinking - Next-gen reasoning with extended thinking time
+  - GPT-5.1 Mini - Improved efficiency
+  - GPT-5.1 Nano - Enhanced edge model
+
+- **GPT-5 Series** (Released August 2025)
+  - GPT-5 - State-of-the-art reasoning
+  - GPT-5 Thinking - Deep reasoning with chain-of-thought
+  - GPT-5 Mini - Balanced performance and cost
+  - GPT-5 Nano - Lightweight edge deployment
+
+- **GPT-4 Series**
+  - GPT-4o - Real-time audio and multimodal
+  - GPT-4o Mini, GPT-4 Turbo
+  - o1-preview, o1-mini (reasoning models)
+  - GPT-3.5 Turbo
+
+#### Anthropic (3 models)
+- Claude Opus 4.1 - Most intelligent Claude for complex reasoning
+- Claude Sonnet 4.5 - Balanced intelligence and speed
+- Claude Haiku 4.5 - Fastest Claude for instant responses
+
+#### Google (4 models)
+- Gemini 2.5 Pro - Advanced thinking with 1M context
+- Gemini 2.5 Flash - Low latency thinking
+- Gemini 2.5 Flash-Lite - Ultra-fast with optional thinking
+- Gemini 2.0 Flash - Native tool use with 1M context
+
+#### Moonshot AI (2 models)
+- Kimi K2 Thinking - Open-source thinking model with 200+ tool calls
+- Kimi K2 Instruct - General-purpose chat with 1T parameters
+
+#### Meta (5 models)
+- Llama 4 Maverick - 400B MoE model with 128 experts
+- Llama 4 Scout - 109B MoE model with 16 experts
+- Llama 3.3 70B - Enhanced reasoning capabilities
+- Llama 3.2 Vision - Multimodal with image understanding
+- Llama 3.2 3B - Compact edge-optimized model
+
+#### Mistral (4 models)
+- Mistral Large 2 - Flagship model with 123B parameters
+- Mistral Nemo - Efficient 12B model optimized for enterprise
+- Codestral 25.01 - Specialized code generation
+- Pixtral Large - Multimodal vision capabilities
+
+**Total: 31 AI models** from the world's leading AI providers
 
 ### Technical Architecture
 - **Framework**: React Native 0.72.6 with TypeScript

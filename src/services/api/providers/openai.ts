@@ -16,8 +16,12 @@ export class OpenAIProvider extends BaseAPIProvider {
       maxRetries: 3,
       timeout: 60000, // 60 seconds
       models: [
-        'gpt-5-turbo',
-        'gpt-5-turbo-thinking',
+        'gpt-5.1',
+        'gpt-5.1-thinking',
+        'gpt-5.1-mini',
+        'gpt-5.1-nano',
+        'gpt-5',
+        'gpt-5-thinking',
         'gpt-5-mini',
         'gpt-5-nano',
         'gpt-4o',
@@ -64,7 +68,7 @@ export class OpenAIProvider extends BaseAPIProvider {
   }
 
   /**
-   * Override for o1 models which have special requirements
+   * Override for o1 models and thinking models which have special requirements
    */
   async createChatCompletion(
     messages: Message[],
@@ -83,13 +87,26 @@ export class OpenAIProvider extends BaseAPIProvider {
       return super.createChatCompletion(messages, model, filteredOptions);
     }
 
-    // GPT-5 thinking models may have special parameters
+    // GPT-5.1 and GPT-5 thinking models may have special parameters
     if (model.id.includes('thinking')) {
       const thinkingOptions = {
         ...options,
-        // Add any GPT-5 thinking-specific parameters here
+        // GPT-5.1 thinking models support extended reasoning mode
+        ...(model.id.includes('5.1') && {
+          reasoning_effort: 'extended', // Can be 'standard', 'extended', or 'deep'
+        }),
       };
       return super.createChatCompletion(messages, model, thinkingOptions);
+    }
+
+    // GPT-5.1 models with enhanced safety
+    if (model.id.startsWith('gpt-5.1')) {
+      const enhancedOptions = {
+        ...options,
+        // Enable enhanced safety guardrails for GPT-5.1
+        safety_level: 'enhanced',
+      };
+      return super.createChatCompletion(messages, model, enhancedOptions);
     }
 
     return super.createChatCompletion(messages, model, options);
