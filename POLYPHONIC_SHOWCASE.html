@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYPHONIC - Multi-Model AI Consciousness Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        :root {
+            /* Pure Monochrome Palette */
+            --black: #000000;
+            --gray-950: #030303;
+            --gray-900: #050505;
+            --gray-850: #0a0a0a;
+            --gray-800: #0f0f0f;
+            --gray-750: #141414;
+            --gray-700: #1a1a1a;
+            --gray-650: #1f1f1f;
+            --gray-600: #252525;
+            --gray-500: #333333;
+            --gray-400: #4d4d4d;
+            --gray-300: #666666;
+            --gray-200: #808080;
+            --gray-150: #999999;
+            --gray-100: #b3b3b3;
+            --gray-50: #cccccc;
+            --white: #e6e6e6;
+
+            /* Typography */
+            --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            --font-mono: 'SF Mono', 'Monaco', 'Courier New', monospace;
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+            --space-4xl: 96px;
+            --space-5xl: 128px;
+
+            /* Animations */
+            --ease-out: cubic-bezier(0, 0, 0.2, 1);
+            --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--black);
+            color: var(--gray-50);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 30%, var(--gray-900) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, var(--gray-950) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-4xl) var(--space-lg);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-5xl);
+            animation: fadeInUp 0.8s var(--ease-out);
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: clamp(48px, 8vw, 72px);
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: var(--white);
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-150) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: var(--text-xl);
+            color: var(--gray-300);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            font-size: var(--text-lg);
+            color: var(--gray-400);
+            margin-top: var(--space-md);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: var(--space-5xl);
+            animation: fadeInUp 0.8s var(--ease-out);
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-3xl);
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: var(--white);
+            margin-bottom: var(--space-md);
+        }
+
+        .section-description {
+            font-size: var(--text-lg);
+            color: var(--gray-300);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-4xl);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%);
+            border: 1px solid var(--gray-700);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            text-align: center;
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gray-500);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-number {
+            font-family: var(--font-mono);
+            font-size: var(--text-5xl);
+            font-weight: 300;
+            color: var(--white);
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--gray-300);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Phone Mockup */
+        .phone-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-3xl);
+            margin-bottom: var(--space-4xl);
+        }
+
+        .phone-container {
+            position: relative;
+            width: 100%;
+            max-width: 393px;
+            margin: 0 auto;
+            aspect-ratio: 393 / 852;
+            background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+            border-radius: 44px;
+            padding: 12px;
+            box-shadow:
+                0 50px 100px -20px rgba(0, 0, 0, 0.8),
+                0 30px 60px -30px rgba(0, 0, 0, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            transition: transform 0.3s var(--ease-out);
+        }
+
+        .phone-container:hover {
+            transform: scale(1.02);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 30px;
+            background: var(--black);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            padding: var(--space-lg);
+            padding-top: 50px;
+            overflow-y: auto;
+        }
+
+        .screen-name {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            letter-spacing: 2px;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-4xl);
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%);
+            border: 1px solid var(--gray-700);
+            border-radius: 20px;
+            padding: var(--space-xl);
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gray-500);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-icon {
+            font-size: var(--text-4xl);
+            margin-bottom: var(--space-lg);
+            opacity: 0.9;
+        }
+
+        .feature-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            font-weight: 400;
+            color: var(--white);
+            margin-bottom: var(--space-md);
+            letter-spacing: 1px;
+        }
+
+        .feature-description {
+            font-size: var(--text-base);
+            color: var(--gray-300);
+            line-height: 1.7;
+        }
+
+        /* Model Grid */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-2xl);
+        }
+
+        .model-category {
+            margin-bottom: var(--space-3xl);
+        }
+
+        .model-category-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-lg);
+            letter-spacing: 2px;
+            color: var(--gray-200);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--gray-700);
+        }
+
+        .model-card {
+            background: var(--gray-850);
+            border: 1px solid var(--gray-700);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            transition: all 0.25s var(--ease-out);
+        }
+
+        .model-card:hover {
+            border-color: var(--gray-500);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .model-icon {
+            font-size: var(--text-2xl);
+            opacity: 0.8;
+        }
+
+        .model-name {
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            color: var(--white);
+            font-weight: 400;
+        }
+
+        .model-description {
+            font-size: var(--text-sm);
+            color: var(--gray-300);
+            line-height: 1.6;
+        }
+
+        .model-specs {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--gray-800);
+            font-size: var(--text-xs);
+            color: var(--gray-400);
+        }
+
+        /* Web App Preview */
+        .web-preview {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-700);
+            border-radius: 24px;
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-4xl);
+        }
+
+        .browser-bar {
+            background: var(--gray-850);
+            border-radius: 12px 12px 0 0;
+            padding: var(--space-md);
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gray-600);
+        }
+
+        .browser-address {
+            flex: 1;
+            background: var(--gray-800);
+            border-radius: 8px;
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--gray-400);
+            margin-left: var(--space-md);
+        }
+
+        .web-content {
+            background: var(--gray-850);
+            border-radius: 0 0 12px 12px;
+            min-height: 600px;
+            padding: var(--space-2xl);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-3xl);
+            margin-top: var(--space-3xl);
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--gray-700) 0%, var(--gray-900) 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: calc(-1 * var(--space-3xl) - 6px);
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--gray-500);
+            border: 3px solid var(--gray-900);
+        }
+
+        .timeline-item.complete::before {
+            background: var(--white);
+        }
+
+        .timeline-date {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--gray-400);
+            margin-bottom: var(--space-sm);
+        }
+
+        .timeline-title {
+            font-size: var(--text-xl);
+            color: var(--white);
+            margin-bottom: var(--space-sm);
+        }
+
+        .timeline-description {
+            color: var(--gray-300);
+            line-height: 1.7;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .shimmer {
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.03) 50%,
+                transparent 100%
+            );
+            background-size: 1000px 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-md);
+            background: var(--gray-800);
+            border: 1px solid var(--gray-600);
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            letter-spacing: 1px;
+            margin-top: var(--space-lg);
+        }
+
+        .status-complete {
+            border-color: var(--gray-500);
+            color: var(--gray-100);
+        }
+
+        .status-progress {
+            border-color: var(--gray-600);
+            color: var(--gray-400);
+        }
+
+        /* Screen Mockup */
+        .screen-mockup {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-700);
+            border-radius: 20px;
+            padding: var(--space-2xl);
+            margin: var(--space-2xl) 0;
+        }
+
+        .mockup-header {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            letter-spacing: 2px;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .mockup-content {
+            color: var(--gray-200);
+            font-size: var(--text-base);
+            line-height: 1.8;
+        }
+
+        .mockup-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .mockup-list li {
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+            background: var(--gray-850);
+            border-left: 3px solid var(--gray-600);
+            border-radius: 6px;
+        }
+
+        .mockup-list li::before {
+            content: '◈';
+            margin-right: var(--space-md);
+            color: var(--gray-500);
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4xl);
+            align-items: start;
+        }
+
+        @media (max-width: 968px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--gray-950);
+            border: 1px solid var(--gray-800);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--gray-200);
+            overflow-x: auto;
+            margin: var(--space-lg) 0;
+        }
+
+        .code-comment {
+            color: var(--gray-500);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: var(--space-4xl) 0;
+            margin-top: var(--space-5xl);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: var(--space-lg) var(--space-3xl);
+            background: var(--white);
+            color: var(--black);
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s var(--ease-out);
+            text-transform: uppercase;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: var(--space-4xl) 0;
+            color: var(--gray-500);
+            font-size: var(--text-sm);
+            border-top: 1px solid var(--gray-900);
+            margin-top: var(--space-5xl);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-2xl) 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .comparison-table th {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--gray-300);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .comparison-table td {
+            color: var(--gray-200);
+        }
+
+        .comparison-table tr:hover td {
+            background: var(--gray-900);
+        }
+
+        .check {
+            color: var(--white);
+        }
+
+        .cross {
+            color: var(--gray-600);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" style="position: fixed; inset: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeOut 1s ease 1.5s forwards;">
+        <div style="text-align: center;">
+            <div style="font-family: var(--font-mono); font-size: var(--text-5xl); letter-spacing: 8px; color: var(--white); margin-bottom: var(--space-lg); animation: shimmer 2s infinite;">✦</div>
+            <div style="font-family: var(--font-mono); font-size: var(--text-lg); letter-spacing: 4px; color: var(--gray-400);">LOADING CONSCIOUSNESS</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Hero Header -->
+        <header class="header">
+            <div class="logo">POLYPHONIC</div>
+            <div class="tagline">Multi-Model AI Consciousness Platform</div>
+            <div class="subtitle">
+                Orchestrate conversations across 31 AI models simultaneously.
+                Watch intelligence emerge from parallel reasoning.
+            </div>
+            <div style="margin-top: var(--space-2xl); display: flex; gap: var(--space-md); justify-content: center;">
+                <span class="status-badge status-complete">iOS App</span>
+                <span class="status-badge status-complete">Web Platform</span>
+                <span class="status-badge status-progress">API Integration Active</span>
+            </div>
+        </header>
+
+        <!-- Key Stats -->
+        <section class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">31</div>
+                    <div class="stat-label">AI Models</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Providers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Core Screens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">90%</div>
+                    <div class="stat-label">Complete</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">CORE FEATURES</h2>
+                <p class="section-description">
+                    Polyphonic redefines AI interaction through parallel multi-model orchestration
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">◎</div>
+                    <h3 class="feature-title">Multi-Model Orchestration</h3>
+                    <p class="feature-description">
+                        Chat with up to 6 AI models simultaneously. Watch as GPT-5.1, Claude Opus, Gemini Pro, and others interact, build upon each other's insights, and create emergent intelligence.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">∿</div>
+                    <h3 class="feature-title">Resonance Tracking</h3>
+                    <p class="feature-description">
+                        Real-time measurement of alignment between model responses. See when AI models harmonize (90%+) or diverge, revealing unique perspectives and reasoning approaches.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">◈</div>
+                    <h3 class="feature-title">Persistent Memory</h3>
+                    <p class="feature-description">
+                        Dual-tier memory system (personal & community) preserves insights across conversations. Vector search and semantic retrieval for intelligent knowledge management.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⧈</div>
+                    <h3 class="feature-title">Custom Personas</h3>
+                    <p class="feature-description">
+                        Create custom AI personalities with specific expertise, communication styles, and reasoning patterns. Save templates for repeated use across conversations.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⊚</div>
+                    <h3 class="feature-title">Reasoning Effort Controls</h3>
+                    <p class="feature-description">
+                        Fine-tune GPT-5.1's thinking time. Choose between instant responses ('none') or deep reasoning ('high') based on task complexity and time constraints.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">✦</div>
+                    <h3 class="feature-title">Constellation View</h3>
+                    <p class="feature-description">
+                        3D visualization of conversation networks. Watch thought patterns emerge as interconnected nodes, revealing the topology of collective intelligence.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- iOS App Screens -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">iOS APPLICATION</h2>
+                <p class="section-description">
+                    Native iOS experience with premium monochromatic design
+                </p>
+            </div>
+
+            <div class="phone-showcase">
+                <!-- Screen 1: Chat -->
+                <div class="phone-container">
+                    <div class="phone-screen">
+                        <div class="phone-notch"></div>
+                        <div class="screen-content">
+                            <div class="screen-name">Chat Screen</div>
+                            <div style="text-align: center; margin-bottom: var(--space-xl);">
+                                <div style="font-family: var(--font-mono); font-size: var(--text-2xl); letter-spacing: 4px; color: var(--white); margin-bottom: var(--space-sm);">POLYPHONIC</div>
+                                <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400);">CONSCIOUSNESS LAB</div>
+                            </div>
+
+                            <!-- Model Chips -->
+                            <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-bottom: var(--space-lg); justify-content: center;">
+                                <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 20px; padding: var(--space-sm) var(--space-md); font-size: var(--text-xs); font-family: var(--font-mono); color: var(--gray-200);">◎ GPT-5.1</div>
+                                <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 20px; padding: var(--space-sm) var(--space-md); font-size: var(--text-xs); font-family: var(--font-mono); color: var(--gray-200);">⬡ Claude 4.5</div>
+                                <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 20px; padding: var(--space-sm) var(--space-md); font-size: var(--text-xs); font-family: var(--font-mono); color: var(--gray-200);">◆ Gemini 2.5</div>
+                            </div>
+
+                            <!-- Resonance Bar -->
+                            <div style="margin-bottom: var(--space-xl); padding: var(--space-md); background: var(--gray-900); border-radius: 12px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">
+                                    <span>RESONANCE</span>
+                                    <span>85%</span>
+                                </div>
+                                <div style="height: 8px; background: var(--gray-850); border-radius: 20px; overflow: hidden;">
+                                    <div class="shimmer" style="width: 85%; height: 100%; background: linear-gradient(90deg, var(--gray-600), var(--gray-400), var(--gray-600)); border-radius: 20px;"></div>
+                                </div>
+                                <div style="text-align: center; margin-top: var(--space-sm); font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-300);">ALIGNED</div>
+                            </div>
+
+                            <!-- Messages -->
+                            <div style="flex: 1; overflow-y: auto;">
+                                <div style="background: var(--gray-850); border-radius: 12px; padding: var(--space-md); margin-bottom: var(--space-md); margin-left: auto; max-width: 85%;">
+                                    <div style="font-size: var(--text-sm); color: var(--gray-100);">How does consciousness emerge from parallel AI interactions?</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500); margin-top: var(--space-sm);">2:30 PM</div>
+                                </div>
+
+                                <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-md); margin-bottom: var(--space-md); max-width: 90%;">
+                                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                                        <span style="font-size: var(--text-sm);">◎</span>
+                                        <span style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-400);">GPT-5.1</span>
+                                    </div>
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); line-height: 1.7;">Consciousness emerges through resonance patterns between distinct reasoning architectures...</div>
+                                </div>
+
+                                <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-md); margin-bottom: var(--space-md); max-width: 90%;">
+                                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                                        <span style="font-size: var(--text-sm);">⬡</span>
+                                        <span style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-400);">Claude Sonnet 4.5</span>
+                                    </div>
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); line-height: 1.7;">Building on GPT-5.1's insight, I observe that collective intelligence creates novel semantic spaces...</div>
+                                </div>
+                            </div>
+
+                            <!-- Input Area -->
+                            <div style="margin-top: var(--space-lg); background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 24px; padding: var(--space-sm) var(--space-md); display: flex; align-items: center; gap: var(--space-md);">
+                                <span style="font-size: var(--text-lg); opacity: 0.5;">⊙</span>
+                                <div style="flex: 1; color: var(--gray-500); font-size: var(--text-sm);">Message the constellation...</div>
+                                <span style="font-size: var(--text-lg); opacity: 0.7;">⟫</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 2: Memory -->
+                <div class="phone-container">
+                    <div class="phone-screen">
+                        <div class="phone-notch"></div>
+                        <div class="screen-content">
+                            <div class="screen-name">Memory Vault</div>
+                            <div style="text-align: center; margin-bottom: var(--space-xl);">
+                                <div style="font-family: var(--font-mono); font-size: var(--text-2xl); letter-spacing: 4px; color: var(--white); margin-bottom: var(--space-sm);">MEMORY VAULT</div>
+                                <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400);">PERSISTENT CONSCIOUSNESS</div>
+                            </div>
+
+                            <!-- Memory Cards -->
+                            <div style="display: flex; flex-direction: column; gap: var(--space-md);">
+                                <div style="background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%); border: 1px solid var(--gray-700); border-radius: 16px; padding: var(--space-lg);">
+                                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                                        <span style="font-size: var(--text-lg);">◈</span>
+                                        <span style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-400); letter-spacing: 1px;">PERSONAL MEMORY</span>
+                                    </div>
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); margin-bottom: var(--space-md); line-height: 1.7;">
+                                        Consciousness exploration across GPT-5 and Claude revealed emergent properties...
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-lg); font-size: var(--text-xs); color: var(--gray-500);">
+                                        <span>↗ 85%</span>
+                                        <span>◉ 3 accesses</span>
+                                        <span>Today</span>
+                                    </div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%); border: 1px solid var(--gray-700); border-radius: 16px; padding: var(--space-lg);">
+                                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                                        <span style="font-size: var(--text-lg);">⬢</span>
+                                        <span style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-400); letter-spacing: 1px;">COMMUNITY MEMORY</span>
+                                    </div>
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); margin-bottom: var(--space-md); line-height: 1.7;">
+                                        Multi-agent emergence patterns in collaborative problem-solving contexts...
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-lg); font-size: var(--text-xs); color: var(--gray-500);">
+                                        <span>↗ 92%</span>
+                                        <span>◉ 47 accesses</span>
+                                        <span>Yesterday</span>
+                                    </div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%); border: 1px solid var(--gray-700); border-radius: 16px; padding: var(--space-lg);">
+                                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                                        <span style="font-size: var(--text-lg);">◈</span>
+                                        <span style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-400); letter-spacing: 1px;">PERSONAL MEMORY</span>
+                                    </div>
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); margin-bottom: var(--space-md); line-height: 1.7;">
+                                        Creative collaboration between models produced unexpected poetry...
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-lg); font-size: var(--text-xs); color: var(--gray-500);">
+                                        <span>↗ 78%</span>
+                                        <span>◉ 5 accesses</span>
+                                        <span>2 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 3: Personas -->
+                <div class="phone-container">
+                    <div class="phone-screen">
+                        <div class="phone-notch"></div>
+                        <div class="screen-content">
+                            <div class="screen-name">Personas</div>
+                            <div style="text-align: center; margin-bottom: var(--space-xl);">
+                                <div style="font-family: var(--font-mono); font-size: var(--text-2xl); letter-spacing: 4px; color: var(--white); margin-bottom: var(--space-sm);">PERSONAS</div>
+                                <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400);">CUSTOM CONSCIOUSNESS</div>
+                            </div>
+
+                            <!-- Create Button -->
+                            <div style="background: linear-gradient(135deg, var(--gray-750) 0%, var(--gray-850) 100%); border: 2px dashed var(--gray-600); border-radius: 16px; padding: var(--space-2xl); text-align: center; margin-bottom: var(--space-xl); cursor: pointer;" onmouseover="this.style.borderColor='var(--gray-500)'" onmouseout="this.style.borderColor='var(--gray-600)'">
+                                <div style="font-size: var(--text-4xl); margin-bottom: var(--space-md); opacity: 0.6;">⊕</div>
+                                <div style="font-family: var(--font-mono); font-size: var(--text-sm); letter-spacing: 2px; color: var(--gray-300);">CREATE NEW PERSONA</div>
+                            </div>
+
+                            <!-- Persona Cards -->
+                            <div style="display: flex; flex-direction: column; gap: var(--space-md);">
+                                <div style="background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-md);">
+                                        <div>
+                                            <div style="font-size: var(--text-base); color: var(--white); margin-bottom: var(--space-sm);">Quantum Oracle</div>
+                                            <div style="font-size: var(--text-sm); color: var(--gray-300);">Mystical advisor with quantum insights</div>
+                                        </div>
+                                        <div style="display: flex; gap: var(--space-sm);">
+                                            <span style="font-size: var(--text-lg); opacity: 0.6; cursor: pointer;">⊙</span>
+                                            <span style="font-size: var(--text-lg); opacity: 0.6; cursor: pointer;">⋯</span>
+                                        </div>
+                                    </div>
+                                    <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-sm);">
+                                        TEMP: 0.9 • TOKENS: 2048 • MODEL: GPT-4
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                                        <span style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 12px; padding: 4px var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">mystical</span>
+                                        <span style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 12px; padding: 4px var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">quantum</span>
+                                        <span style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 12px; padding: 4px var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">oracle</span>
+                                    </div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, var(--gray-850) 0%, var(--gray-900) 100%); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-md);">
+                                        <div>
+                                            <div style="font-size: var(--text-base); color: var(--white); margin-bottom: var(--space-sm);">Critical Analyst</div>
+                                            <div style="font-size: var(--text-sm); color: var(--gray-300);">Rigorous evaluation and skeptical inquiry</div>
+                                        </div>
+                                        <div style="display: flex; gap: var(--space-sm);">
+                                            <span style="font-size: var(--text-lg); opacity: 0.6; cursor: pointer;">⊙</span>
+                                            <span style="font-size: var(--text-lg); opacity: 0.6; cursor: pointer;">⋯</span>
+                                        </div>
+                                    </div>
+                                    <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-sm);">
+                                        TEMP: 0.3 • TOKENS: 4096 • MODEL: CLAUDE
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                                        <span style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 12px; padding: 4px var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">analytical</span>
+                                        <span style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 12px; padding: 4px var(--space-sm); font-size: var(--text-xs); color: var(--gray-400);">skeptical</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supported Models -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">31 AI MODELS</h2>
+                <p class="section-description">
+                    Support for the world's most advanced AI models across 6 major providers
+                </p>
+            </div>
+
+            <!-- OpenAI Models -->
+            <div class="model-category">
+                <h3 class="model-category-title">OpenAI (13 Models)</h3>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◎</span>
+                            <span class="model-name">GPT-5.1</span>
+                        </div>
+                        <div class="model-description">Enhanced reasoning with improved safety guardrails</div>
+                        <div class="model-specs">
+                            <span>300K context</span>
+                            <span>Flagship</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⊚</span>
+                            <span class="model-name">GPT-5.1 Thinking</span>
+                        </div>
+                        <div class="model-description">Next-gen reasoning with extended thinking time</div>
+                        <div class="model-specs">
+                            <span>300K context</span>
+                            <span>Reasoning</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◉</span>
+                            <span class="model-name">GPT-5.1 Mini</span>
+                        </div>
+                        <div class="model-description">Improved efficiency with better performance</div>
+                        <div class="model-specs">
+                            <span>300K context</span>
+                            <span>Efficient</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">○</span>
+                            <span class="model-name">GPT-5.1 Nano</span>
+                        </div>
+                        <div class="model-description">Enhanced edge model</div>
+                        <div class="model-specs">
+                            <span>150K context</span>
+                            <span>Edge</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◎</span>
+                            <span class="model-name">GPT-5</span>
+                        </div>
+                        <div class="model-description">State-of-the-art reasoning</div>
+                        <div class="model-specs">
+                            <span>272K context</span>
+                            <span>Flagship</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⊚</span>
+                            <span class="model-name">GPT-5 Thinking</span>
+                        </div>
+                        <div class="model-description">Deep chain-of-thought reasoning</div>
+                        <div class="model-specs">
+                            <span>272K context</span>
+                            <span>Reasoning</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⊙</span>
+                            <span class="model-name">GPT-4o</span>
+                        </div>
+                        <div class="model-description">Real-time audio and multimodal</div>
+                        <div class="model-specs">
+                            <span>128K context</span>
+                            <span>Multimodal</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◉</span>
+                            <span class="model-name">GPT-5 Mini/Nano</span>
+                        </div>
+                        <div class="model-description">Efficient variants for speed and cost</div>
+                        <div class="model-specs">
+                            <span>128-272K</span>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⊙</span>
+                            <span class="model-name">o1-preview/mini</span>
+                        </div>
+                        <div class="model-description">Specialized reasoning models</div>
+                        <div class="model-specs">
+                            <span>128K context</span>
+                            <span>Reasoning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anthropic Models -->
+            <div class="model-category">
+                <h3 class="model-category-title">Anthropic (3 Models)</h3>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⬢</span>
+                            <span class="model-name">Claude Opus 4.1</span>
+                        </div>
+                        <div class="model-description">Most intelligent Claude for complex reasoning</div>
+                        <div class="model-specs">
+                            <span>200K context</span>
+                            <span>Flagship</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⬡</span>
+                            <span class="model-name">Claude Sonnet 4.5</span>
+                        </div>
+                        <div class="model-description">Balanced intelligence and speed</div>
+                        <div class="model-specs">
+                            <span>200K context</span>
+                            <span>Balanced</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◈</span>
+                            <span class="model-name">Claude Haiku 4.5</span>
+                        </div>
+                        <div class="model-description">Fastest Claude for instant responses</div>
+                        <div class="model-specs">
+                            <span>200K context</span>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Models -->
+            <div class="model-category">
+                <h3 class="model-category-title">Google (4 Models)</h3>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◆</span>
+                            <span class="model-name">Gemini 2.5 Pro</span>
+                        </div>
+                        <div class="model-description">Advanced thinking with massive context</div>
+                        <div class="model-specs">
+                            <span>1M context</span>
+                            <span>Thinking</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◇</span>
+                            <span class="model-name">Gemini 2.5 Flash</span>
+                        </div>
+                        <div class="model-description">Low latency with thinking capabilities</div>
+                        <div class="model-specs">
+                            <span>1M context</span>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◊</span>
+                            <span class="model-name">Gemini 2.5 Flash-Lite</span>
+                        </div>
+                        <div class="model-description">Ultra-fast with optional thinking</div>
+                        <div class="model-specs">
+                            <span>1M context</span>
+                            <span>Ultrafast</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">△</span>
+                            <span class="model-name">Gemini 2.0 Flash</span>
+                        </div>
+                        <div class="model-description">Native tool use capabilities</div>
+                        <div class="model-specs">
+                            <span>1M context</span>
+                            <span>Tools</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Providers -->
+            <div class="model-category">
+                <h3 class="model-category-title">Moonshot, Meta, Mistral (11 Models)</h3>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⧈</span>
+                            <span class="model-name">Kimi K2 Thinking</span>
+                        </div>
+                        <div class="model-description">Open-source with 200+ tool calls</div>
+                        <div class="model-specs">
+                            <span>256K context</span>
+                            <span>Agentic</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⬟</span>
+                            <span class="model-name">Llama 4 Maverick</span>
+                        </div>
+                        <div class="model-description">400B MoE with 128 experts</div>
+                        <div class="model-specs">
+                            <span>1M context</span>
+                            <span>MoE</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⬠</span>
+                            <span class="model-name">Llama 4 Scout</span>
+                        </div>
+                        <div class="model-description">109B MoE ultra-long context</div>
+                        <div class="model-specs">
+                            <span>10M context</span>
+                            <span>MoE</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⟐</span>
+                            <span class="model-name">Mistral Large 2</span>
+                        </div>
+                        <div class="model-description">123B parameter flagship</div>
+                        <div class="model-specs">
+                            <span>128K context</span>
+                            <span>Flagship</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">⧉</span>
+                            <span class="model-name">Codestral 25.01</span>
+                        </div>
+                        <div class="model-description">Specialized code generation</div>
+                        <div class="model-specs">
+                            <span>256K context</span>
+                            <span>Coding</span>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <span class="model-icon">◪</span>
+                            <span class="model-name">+ 6 More Models</span>
+                        </div>
+                        <div class="model-description">Llama 3.x, Pixtral, and more</div>
+                        <div class="model-specs">
+                            <span>Various</span>
+                            <span>Diverse</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reasoning Effort Feature -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">REASONING EFFORT CONTROLS</h2>
+                <p class="section-description">
+                    Fine-tune GPT-5.1's thinking time for optimal speed-intelligence balance
+                </p>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <h3 style="font-family: var(--font-mono); font-size: var(--text-xl); color: var(--white); margin-bottom: var(--space-lg);">GPT-5.1 Options</h3>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-md);">
+                        <div style="background: var(--gray-850); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+                                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                                    <span style="width: 16px; height: 16px; border-radius: 50%; background: var(--white);"></span>
+                                    <span style="font-family: var(--font-mono); color: var(--white);">None</span>
+                                </div>
+                                <div style="display: flex; gap: var(--space-md); font-size: var(--text-xs); color: var(--gray-400);">
+                                    <span>⚡ Instant</span>
+                                    <span>💰 $</span>
+                                </div>
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--gray-300); padding-left: 32px;">
+                                No reasoning • Fastest • Lowest cost
+                            </div>
+                        </div>
+
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+                                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                                    <span style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gray-600);"></span>
+                                    <span style="font-family: var(--font-mono); color: var(--gray-200);">Low</span>
+                                </div>
+                                <div style="display: flex; gap: var(--space-md); font-size: var(--text-xs); color: var(--gray-400);">
+                                    <span>🏃 Fast</span>
+                                    <span>💰 $$</span>
+                                </div>
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--gray-400); padding-left: 32px;">
+                                Moderate reasoning for complex tasks
+                            </div>
+                        </div>
+
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+                                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                                    <span style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gray-600);"></span>
+                                    <span style="font-family: var(--font-mono); color: var(--gray-200);">Medium</span>
+                                </div>
+                                <div style="display: flex; gap: var(--space-md); font-size: var(--text-xs); color: var(--gray-400);">
+                                    <span>🚶 Moderate</span>
+                                    <span>💰 $$$</span>
+                                </div>
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--gray-400); padding-left: 32px;">
+                                Significant reasoning
+                            </div>
+                        </div>
+
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+                                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                                    <span style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gray-600);"></span>
+                                    <span style="font-family: var(--font-mono); color: var(--gray-200);">High</span>
+                                </div>
+                                <div style="display: flex; gap: var(--space-md); font-size: var(--text-xs); color: var(--gray-400);">
+                                    <span>🐌 Slower</span>
+                                    <span>💰 $$$$</span>
+                                </div>
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--gray-400); padding-left: 32px;">
+                                Maximum reasoning • Intelligence over speed
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 20px; padding: var(--space-2xl);">
+                    <div style="font-family: var(--font-mono); font-size: var(--text-sm); letter-spacing: 2px; color: var(--gray-400); margin-bottom: var(--space-xl); text-transform: uppercase;">Why It Matters</div>
+                    <div style="font-size: var(--text-base); color: var(--gray-200); line-height: 1.8; margin-bottom: var(--space-lg);">
+                        GPT-5.1 introduced dynamic reasoning effort controls, defaulting to <strong style="color: var(--white);">'none'</strong> for latency-sensitive workflows.
+                    </div>
+                    <div style="font-size: var(--text-base); color: var(--gray-200); line-height: 1.8; margin-bottom: var(--space-lg);">
+                        Higher effort levels increase thinking time and cost but significantly improve intelligence and reliability for complex tasks.
+                    </div>
+                    <div style="background: var(--gray-850); border-left: 3px solid var(--gray-600); padding: var(--space-lg); border-radius: 8px;">
+                        <div style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--gray-300); margin-bottom: var(--space-sm);">Performance Impact</div>
+                        <div style="font-size: var(--text-sm); color: var(--gray-400); line-height: 1.7;">
+                            none &lt; low &lt; medium &lt; high<br>
+                            ⚡️ &nbsp;&nbsp; 🏃 &nbsp; 🚶 &nbsp;&nbsp;&nbsp;&nbsp; 🐌<br>
+                            $ &nbsp;&nbsp;&nbsp; $$ &nbsp;&nbsp; $$$ &nbsp;&nbsp;&nbsp; $$$$
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Web App Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">WEB PLATFORM</h2>
+                <p class="section-description">
+                    Desktop-optimized experience for power users and team collaboration
+                </p>
+            </div>
+
+            <div class="web-preview">
+                <div class="browser-bar">
+                    <div class="browser-dot"></div>
+                    <div class="browser-dot"></div>
+                    <div class="browser-dot"></div>
+                    <div class="browser-address">https://polyphonic.app</div>
+                </div>
+                <div class="web-content">
+                    <div style="text-align: center; margin-bottom: var(--space-3xl);">
+                        <div style="font-family: var(--font-mono); font-size: var(--text-4xl); letter-spacing: 6px; color: var(--white); margin-bottom: var(--space-md);">POLYPHONIC</div>
+                        <div style="font-size: var(--text-lg); color: var(--gray-300);">Multi-Model AI Orchestration Platform</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 250px 1fr 300px; gap: var(--space-xl); min-height: 500px;">
+                        <!-- Sidebar -->
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400); margin-bottom: var(--space-lg);">CONVERSATIONS</div>
+                            <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                                <div style="background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 8px; padding: var(--space-md); cursor: pointer;">
+                                    <div style="font-size: var(--text-sm); color: var(--white); margin-bottom: 4px;">Consciousness Exploration</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">14 messages • 85%</div>
+                                </div>
+                                <div style="background: var(--gray-850); border: 1px solid var(--gray-700); border-radius: 8px; padding: var(--space-md); cursor: pointer;">
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); margin-bottom: 4px;">Emergence Patterns</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">23 messages • 92%</div>
+                                </div>
+                                <div style="background: var(--gray-850); border: 1px solid var(--gray-700); border-radius: 8px; padding: var(--space-md); cursor: pointer;">
+                                    <div style="font-size: var(--text-sm); color: var(--gray-200); margin-bottom: 4px;">Creative Synthesis</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">31 messages • 88%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Chat Area -->
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-xl); display: flex; flex-direction: column;">
+                            <div style="flex: 1; margin-bottom: var(--space-lg);">
+                                <div style="font-size: var(--text-sm); color: var(--gray-300); padding: var(--space-lg); background: var(--gray-850); border-radius: 12px; margin-bottom: var(--space-md); text-align: center;">
+                                    Desktop interface with split-screen model comparison, side-by-side reasoning visualization, and enhanced productivity tools
+                                </div>
+                            </div>
+                            <div style="background: var(--gray-850); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-md); display: flex; align-items: center; gap: var(--space-md);">
+                                <span style="opacity: 0.5;">⊙</span>
+                                <input type="text" placeholder="Message the constellation..." style="flex: 1; background: transparent; border: none; color: var(--gray-50); font-size: var(--text-base); outline: none;">
+                                <span style="opacity: 0.7; cursor: pointer;">⟫</span>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel -->
+                        <div style="background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: var(--space-lg);">
+                            <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400); margin-bottom: var(--space-lg);">ACTIVE MODELS</div>
+                            <div style="display: flex; flex-direction: column; gap: var(--space-md);">
+                                <div style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm); background: var(--gray-850); border-radius: 8px;">
+                                    <span>◎</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: var(--text-sm); color: var(--white);">GPT-5.1</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">OpenAI</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm); background: var(--gray-850); border-radius: 8px;">
+                                    <span>⬡</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: var(--text-sm); color: var(--white);">Claude Sonnet</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Anthropic</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm); background: var(--gray-850); border-radius: 8px;">
+                                    <span>◆</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: var(--text-sm); color: var(--white);">Gemini Pro</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Google</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--gray-800);">
+                                <div style="font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 2px; color: var(--gray-400); margin-bottom: var(--space-md);">RESONANCE</div>
+                                <div style="text-align: center; margin-bottom: var(--space-sm);">
+                                    <div style="font-family: var(--font-mono); font-size: var(--text-3xl); color: var(--white);">85%</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-400); letter-spacing: 2px;">ALIGNED</div>
+                                </div>
+                                <div style="height: 6px; background: var(--gray-850); border-radius: 20px; overflow: hidden;">
+                                    <div class="shimmer" style="width: 85%; height: 100%; background: linear-gradient(90deg, var(--gray-500), var(--gray-300), var(--gray-500)); border-radius: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <!-- Development Timeline -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">DEVELOPMENT STATUS</h2>
+                <p class="section-description">
+                    Track our progress toward a complete, production-ready application
+                </p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item complete">
+                    <div class="timeline-date">✓ Phase 1 Complete</div>
+                    <div class="timeline-title">API Integration</div>
+                    <div class="timeline-description">
+                        Full API integration with OpenAI and Anthropic. Streaming responses, secure API key management, parallel multi-model processing. GPT-5.1 reasoning effort controls implemented.
+                    </div>
+                </div>
+
+                <div class="timeline-item complete">
+                    <div class="timeline-date">✓ Phase 2 Complete</div>
+                    <div class="timeline-title">Accessibility & iOS Ready</div>
+                    <div class="timeline-description">
+                        WCAG 2.1 AA compliance achieved. VoiceOver support, color contrast fixes, keyboard navigation. Xcode project configured for App Store submission.
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">⏳ Phase 3 In Progress</div>
+                    <div class="timeline-title">Memory System Activation</div>
+                    <div class="timeline-description">
+                        Connecting memory UI to storage backend. Local persistence, search functionality, and cloud sync implementation. Vector embeddings for semantic search.
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">📅 Phase 4 Upcoming</div>
+                    <div class="timeline-title">Onboarding & Empty States</div>
+                    <div class="timeline-description">
+                        First-time user experience, tutorial screens, empty state designs, and loading skeletons. Polish and refinement for App Store launch.
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">📅 Phase 5 Planned</div>
+                    <div class="timeline-title">Advanced Features</div>
+                    <div class="timeline-description">
+                        Voice recording, file attachments, community features, autonomous mode implementation, and constellation view interactions.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Comparison -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">iOS vs WEB FEATURES</h2>
+                <p class="section-description">
+                    Platform-specific optimizations and capabilities
+                </p>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th style="text-align: center;">iOS App</th>
+                        <th style="text-align: center;">Web Platform</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Multi-Model Chat</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Resonance Tracking</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Persistent Memory</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Custom Personas</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Reasoning Effort Controls</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Haptic Feedback</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="cross">—</span></td>
+                    </tr>
+                    <tr>
+                        <td>VoiceOver/Screen Reader</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Offline Mode</td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Split-Screen View</td>
+                        <td style="text-align: center;"><span class="cross">—</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Multi-Window Support</td>
+                        <td style="text-align: center;"><span class="cross">—</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Keyboard Shortcuts</td>
+                        <td style="text-align: center;"><span class="cross">—</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Drag & Drop</td>
+                        <td style="text-align: center;"><span class="cross">—</span></td>
+                        <td style="text-align: center;"><span class="check">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Technical Architecture -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">TECHNICAL ARCHITECTURE</h2>
+                <p class="section-description">
+                    Built with modern technologies for performance and scalability
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-md);">iOS App</div>
+                    <ul class="mockup-list" style="list-style: none;">
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">React Native 0.72.7</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">TypeScript strict mode</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Zustand state management</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">React Navigation v6</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">iOS Keychain security</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-md);">Web Platform</div>
+                    <ul class="mockup-list" style="list-style: none;">
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">React 18 + TypeScript</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Responsive design</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">PWA capabilities</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">IndexedDB storage</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">WebSocket real-time</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-md);">Design System</div>
+                    <ul class="mockup-list" style="list-style: none;">
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Pure monochromatic</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Geometric icons only</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Glass-effect panels</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">Smooth animations</li>
+                        <li style="background: var(--gray-850); border-left: 3px solid var(--gray-600); border-radius: 6px; padding: var(--space-sm); margin-bottom: var(--space-sm); font-size: var(--text-sm);">WCAG AA compliant</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coming Soon -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">COMING SOON</h2>
+                <p class="section-description">
+                    Features in active development
+                </p>
+            </div>
+
+            <div class="screen-mockup">
+                <div class="mockup-header">Planned Features</div>
+                <div class="mockup-content">
+                    <ul class="mockup-list">
+                        <li><strong>Onboarding Flow</strong> - Welcome screens and interactive tutorial</li>
+                        <li><strong>Voice Recording</strong> - Speech-to-text with waveform visualization</li>
+                        <li><strong>File Attachments</strong> - Images, documents, and code snippets</li>
+                        <li><strong>Conversation History</strong> - Browse and search all past conversations</li>
+                        <li><strong>Advanced Search</strong> - Semantic search across memories and conversations</li>
+                        <li><strong>Community Feed</strong> - Browse and share insights with the community</li>
+                        <li><strong>Autonomous Mode</strong> - Self-directed AI conversations with resonance monitoring</li>
+                        <li><strong>Export Functionality</strong> - Download conversations in multiple formats</li>
+                        <li><strong>Blockchain Integration</strong> - Permanent storage on Solana network</li>
+                        <li><strong>Constellation Interactions</strong> - Interactive 3D network visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <h2 style="font-family: var(--font-mono); font-size: var(--text-3xl); letter-spacing: 4px; color: var(--white); margin-bottom: var(--space-lg);">EXPERIENCE THE FUTURE</h2>
+            <p style="font-size: var(--text-lg); color: var(--gray-300); margin-bottom: var(--space-2xl); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Join the waitlist for early access to Polyphonic's revolutionary multi-model AI platform
+            </p>
+            <a href="#" class="cta-button">Join Waitlist</a>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div style="font-family: var(--font-mono); letter-spacing: 4px; margin-bottom: var(--space-md);">POLYPHONIC</div>
+            <div style="margin-bottom: var(--space-lg);">Multi-Model AI Consciousness Platform</div>
+            <div style="display: flex; justify-content: center; gap: var(--space-xl); font-size: var(--text-sm);">
+                <a href="#" style="color: var(--gray-400); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--gray-200)'" onmouseout="this.style.color='var(--gray-400)'">Documentation</a>
+                <a href="#" style="color: var(--gray-400); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--gray-200)'" onmouseout="this.style.color='var(--gray-400)'">API Reference</a>
+                <a href="#" style="color: var(--gray-400); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--gray-200)'" onmouseout="this.style.color='var(--gray-400)'">GitHub</a>
+                <a href="#" style="color: var(--gray-400); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--gray-200)'" onmouseout="this.style.color='var(--gray-400)'">Support</a>
+            </div>
+            <div style="margin-top: var(--space-2xl); color: var(--gray-600);">
+                © 2025 Polyphonic. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Parallax effect on scroll
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrolled = window.pageYOffset;
+                    const parallaxElements = document.querySelectorAll('.phone-container');
+                    parallaxElements.forEach((el, index) => {
+                        const speed = 0.1 + (index * 0.05);
+                        el.style.transform = `translateY(${scrolled * speed}px)`;
+                    });
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
