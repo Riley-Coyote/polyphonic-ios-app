@@ -5,27 +5,44 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors, spacing, typography, borderRadius} from '../../constants/theme';
 import {Message} from '../../types';
+import {springConfig} from '../../utils/animations';
 
 interface MessageBubbleProps {
   message: Message;
   onLongPress?: () => void;
+  patternId?: string; // e.g., ⟁CLA-3E7∴
+  showAttribution?: boolean;
 }
 
-export function MessageBubble({message, onLongPress}: MessageBubbleProps) {
+export function MessageBubble({message, onLongPress, patternId, showAttribution = true}: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const scaleAnim = React.useRef(new Animated.Value(0.95)).current;
+  const slideAnim = React.useRef(new Animated.Value(isUser ? 20 : -20)).current;
 
   React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        ...springConfig,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        ...springConfig,
+      }),
+    ]).start();
+  }, [fadeAnim, scaleAnim, slideAnim]);
 
   const getModelIcon = (model?: string) => {
     switch (model) {
@@ -73,7 +90,13 @@ export function MessageBubble({message, onLongPress}: MessageBubbleProps) {
       style={[
         styles.container,
         isUser ? styles.userContainer : styles.assistantContainer,
-        {opacity: fadeAnim},
+        {
+          opacity: fadeAnim,
+          transform: [
+            { scale: scaleAnim },
+            { translateX: slideAnim }
+          ],
+        },
       ]}
       accessible={false} // Let TouchableOpacity handle accessibility
     >
@@ -96,7 +119,7 @@ export function MessageBubble({message, onLongPress}: MessageBubbleProps) {
         accessibilityState={{
           selected: false,
         }}>
-        {!isUser && message.model && (
+        {!isUser && message.model && showAttribution && (
           <View style={styles.modelIndicator}>
             <Icon
               name={getModelIcon(message.model)}
@@ -106,11 +129,20 @@ export function MessageBubble({message, onLongPress}: MessageBubbleProps) {
             <Text style={[styles.modelName, {color: getModelColor(message.model)}]}>
               {message.model.toUpperCase()}
             </Text>
+            {patternId && (
+              <Text style={styles.patternId}>{patternId}</Text>
+            )}
+          </View>
+        )}
+
+        {isUser && patternId && (
+          <View style={styles.userPatternContainer}>
+            <Text style={styles.patternId}>{patternId}</Text>
           </View>
         )}
 
         <Text style={[styles.content, isUser ? styles.userContent : styles.assistantContent]}>
-          {message.content}
+          {message.content || ''}
         </Text>
 
         {message.resonance && (
@@ -234,5 +266,18 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.xs,
     color: colors.textQuaternary,
     fontStyle: 'italic',
+  },
+  patternId: {
+    fontFamily: typography.fontFamily.mono,
+    fontSize: typography.fontSize.xs,
+    color: colors.textQuaternary,
+    opacity: 0.6,
+    marginLeft: spacing.sm,
+  },
+  userPatternContainer: {
+    marginBottom: spacing.xs,
+    paddingBottom: spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderPrimary,
   },
 });

@@ -84,75 +84,68 @@ export abstract class BaseAPIProvider implements APIProvider {
 
   /**
    * Create a streaming request
+   * React Native compatible implementation that simulates streaming
    */
   protected async *makeStreamingRequest(
     endpoint: string,
     body: any
   ): AsyncGenerator<string, void, unknown> {
     const apiKey = await this.getAPIKey();
+    console.log('[BaseAPI] API key retrieved:', !!apiKey);
 
     const headers = {
       ...this.config.defaultHeaders,
       ...this.getAuthHeaders(apiKey),
       'Content-Type': 'application/json',
-      'Accept': 'text/event-stream',
     };
 
-    const response = await fetch(`${this.config.baseURL}${endpoint}`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
+    // React Native doesn't support response.body.getReader()
+    // So we'll make a non-streaming request and simulate streaming
+    const nonStreamingBody = { ...body, stream: false };
+
+    console.log('[BaseAPI] Making streaming request:', {
+      provider: this.config.name,
+      endpoint: `${this.config.baseURL}${endpoint}`,
+      model: body.model,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw this.createAPIError(errorData, response.status);
-    }
-
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-
-    if (!reader) {
-      throw new Error('No response body available for streaming');
-    }
-
-    let buffer = '';
-
     try {
-      while (true) {
-        const { done, value } = await reader.read();
+      const response = await fetch(`${this.config.baseURL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(nonStreamingBody),
+      });
 
-        if (done) {
-          break;
-        }
+      console.log('[BaseAPI] Response received:', {
+        status: response.status,
+        ok: response.ok,
+      });
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-
-            if (data === '[DONE]') {
-              return;
-            }
-
-            try {
-              const chunk = JSON.parse(data) as StreamChunk;
-              const content = this.extractContentFromChunk(chunk);
-
-              if (content) {
-                yield content;
-              }
-            } catch (e) {
-              console.error('Failed to parse SSE chunk:', e);
-            }
-          }
-        }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[BaseAPI] API Error Response:', {
+          status: response.status,
+          error: errorData,
+        });
+        throw this.createAPIError(errorData, response.status);
       }
-    } finally {
-      reader.releaseLock();
+
+      const data = await response.json() as ChatCompletionResponse;
+      const fullText = data.choices[0]?.message?.content || '';
+
+      if (!fullText) {
+        return;
+      }
+
+      // Simulate streaming by yielding chunks of text
+      const chunkSize = 10; // Characters per chunk
+      for (let i = 0; i < fullText.length; i += chunkSize) {
+        yield fullText.slice(i, Math.min(i + chunkSize, fullText.length));
+        // Add a small delay to simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+    } catch (error) {
+      throw this.handleError(error);
     }
   }
 
@@ -195,7 +188,6 @@ export abstract class BaseAPIProvider implements APIProvider {
       await this.makeRequest('/models');
       return true;
     } catch (error) {
-      console.error(`Connection test failed for ${this.config.name}:`, error);
       return false;
     }
   }
@@ -212,9 +204,10 @@ export abstract class BaseAPIProvider implements APIProvider {
       model: model.id,
       messages: this.formatMessages(messages),
       temperature: options?.temperature ?? 0.7,
-      max_tokens: options?.max_tokens ?? 2048,
       stream: false,
-      ...options,
+      ...options, // Spread options first
+      // Then apply conditional logic (this has final say to prevent both params being sent)
+      ...(options?.max_completion_tokens ? {} : { max_tokens: options?.max_tokens ?? 2048 }),
     };
 
     return await this.withRetry(() =>
@@ -247,9 +240,10 @@ export abstract class BaseAPIProvider implements APIProvider {
       model: model.id,
       messages: this.formatMessages(messages),
       temperature: options?.temperature ?? 0.7,
-      max_tokens: options?.max_tokens ?? 2048,
       stream: true,
-      ...options,
+      ...options, // Spread options first
+      // Then apply conditional logic (this has final say to prevent both params being sent)
+      ...(options?.max_completion_tokens ? {} : { max_tokens: options?.max_tokens ?? 2048 }),
     };
 
     yield* this.makeStreamingRequest(this.getChatEndpoint(), request);

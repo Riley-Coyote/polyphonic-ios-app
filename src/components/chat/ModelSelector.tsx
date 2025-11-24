@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {
   View,
   Text,
@@ -7,58 +7,40 @@ import {
   ScrollView,
   Modal,
   Animated,
+  SectionList,
+  Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors, spacing, typography, borderRadius} from '../../constants/theme';
-import {AIModel} from '../../types';
+import {AI_MODELS, getModelsByCategory} from '../../constants/aiModels';
+import {springConfig, pressAnimation} from '../../utils/animations';
 
 interface ModelSelectorProps {
-  selectedModels: AIModel[];
-  onSelectModels: (models: AIModel[]) => void;
+  selectedModels: string[];
+  onSelectModels: (models: string[]) => void;
   maxModels?: number;
 }
-
-const AVAILABLE_MODELS: Array<{
-  id: AIModel;
-  name: string;
-  description: string;
-  icon: string;
-}> = [
-  {
-    id: 'claude-3',
-    name: 'Claude 3',
-    description: 'Anthropic\'s advanced reasoning',
-    icon: 'hexagon',
-  },
-  {
-    id: 'gpt-4',
-    name: 'GPT-4',
-    description: 'OpenAI\'s latest model',
-    icon: 'circle',
-  },
-  {
-    id: 'gemini',
-    name: 'Gemini',
-    description: 'Google\'s multimodal AI',
-    icon: 'triangle',
-  },
-  {
-    id: 'llama',
-    name: 'Llama',
-    description: 'Meta\'s open source model',
-    icon: 'square',
-  },
-];
 
 export function ModelSelector({
   selectedModels,
   onSelectModels,
-  maxModels = 3,
+  maxModels = 5,
 }: ModelSelectorProps) {
   const [isModalVisible, setModalVisible] = useState(false);
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  const modalSlideAnim = React.useRef(new Animated.Value(300)).current;
+  const modalOpacityAnim = React.useRef(new Animated.Value(0)).current;
 
-  const toggleModel = (modelId: AIModel) => {
+  // Organize models by category
+  const modelSections = useMemo(() => {
+    const categories = getModelsByCategory();
+    return Object.entries(categories).map(([category, models]) => ({
+      title: category.toUpperCase(),
+      data: models,
+    }));
+  }, []);
+
+  const toggleModel = (modelId: string) => {
     if (selectedModels.includes(modelId)) {
       onSelectModels(selectedModels.filter(m => m !== modelId));
     } else if (selectedModels.length < maxModels) {
@@ -66,20 +48,57 @@ export function ModelSelector({
     }
   };
 
+  // Get icon for provider
+  const getProviderIcon = (provider: string): string => {
+    switch (provider.toLowerCase()) {
+      case 'openai': return 'circle';
+      case 'anthropic': return 'hexagon';
+      case 'google': return 'triangle';
+      case 'meta': return 'square';
+      case 'moonshot': return 'moon';
+      case 'deepseek': return 'layers';
+      case 'xai': return 'zap';
+      default: return 'box';
+    }
+  };
+
   const handlePress = () => {
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
+    pressAnimation(scaleAnim).start();
+    setModalVisible(true);
+
+    // Animate modal in
+    Animated.parallel([
+      Animated.spring(modalSlideAnim, {
+        toValue: 0,
+        ...springConfig,
+        velocity: 2,
       }),
-      Animated.timing(scaleAnim, {
+      Animated.timing(modalOpacityAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 300,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
         useNativeDriver: true,
       }),
     ]).start();
-    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    // Animate modal out
+    Animated.parallel([
+      Animated.timing(modalSlideAnim, {
+        toValue: 300,
+        duration: 250,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+        useNativeDriver: true,
+      }),
+      Animated.timing(modalOpacityAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setModalVisible(false);
+    });
   };
 
   return (
@@ -94,7 +113,7 @@ export function ModelSelector({
           accessibilityLabel={
             selectedModels.length > 0
               ? `Selected models: ${selectedModels.map(id =>
-                  AVAILABLE_MODELS.find(m => m.id === id)?.name
+                  AI_MODELS.find(m => m.id === id)?.name
                 ).join(', ')}`
               : 'No models selected'
           }
@@ -113,11 +132,11 @@ export function ModelSelector({
             <View style={styles.selectedModelsContainer}>
               {selectedModels.length > 0 ? (
                 selectedModels.map(modelId => {
-                  const model = AVAILABLE_MODELS.find(m => m.id === modelId);
+                  const model = AI_MODELS.find(m => m.id === modelId);
                   return model ? (
                     <View key={modelId} style={styles.modelChip} importantForAccessibility="no">
-                      <Icon name={model.icon} size={12} color={colors.textSecondary} />
-                      <Text style={styles.modelChipText}>{model.name}</Text>
+                      <Icon name={getProviderIcon(model.provider)} size={12} color={colors.textSecondary} />
+                      <Text style={styles.modelChipText} numberOfLines={1}>{model.name}</Text>
                     </View>
                   ) : null;
                 })
@@ -138,21 +157,23 @@ export function ModelSelector({
         visible={isModalVisible}
         transparent
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={handleCloseModal}
         accessible={true}
         accessibilityViewIsModal={true}
       >
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setModalVisible(false)}
+          onPress={handleCloseModal}
           accessible={true}
           accessibilityLabel="Close model selection"
           accessibilityRole="button"
           accessibilityHint="Tap outside to close"
         >
-          <View
+          <TouchableOpacity
             style={styles.modalContent}
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
             accessible={false} // Let children handle accessibility
           >
             <View style={styles.modalHeader}>
@@ -173,17 +194,21 @@ export function ModelSelector({
               </Text>
             </View>
 
-            <ScrollView
+            <SectionList
               style={styles.modelList}
-              accessible={false} // Let children handle accessibility
-            >
-              {AVAILABLE_MODELS.map(model => {
+              sections={modelSections}
+              keyExtractor={(item) => item.id}
+              renderSectionHeader={({section}) => (
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>{section.title}</Text>
+                </View>
+              )}
+              renderItem={({item: model}) => {
                 const isSelected = selectedModels.includes(model.id);
                 const isDisabled = !isSelected && selectedModels.length >= maxModels;
 
                 return (
                   <TouchableOpacity
-                    key={model.id}
                     style={[
                       styles.modelOption,
                       isSelected && styles.modelOptionSelected,
@@ -193,7 +218,7 @@ export function ModelSelector({
                     disabled={isDisabled}
                     // Accessibility props
                     accessible={true}
-                    accessibilityLabel={`${model.name}: ${model.description}`}
+                    accessibilityLabel={`${model.name}: ${model.provider}`}
                     accessibilityHint={
                       isDisabled
                         ? `Maximum of ${maxModels} models reached. Deselect another model first.`
@@ -210,7 +235,7 @@ export function ModelSelector({
                     <View style={styles.modelInfo} importantForAccessibility="no">
                       <View style={styles.modelIconContainer} importantForAccessibility="no">
                         <Icon
-                          name={model.icon}
+                          name={getProviderIcon(model.provider)}
                           size={20}
                           color={
                             isSelected
@@ -226,15 +251,17 @@ export function ModelSelector({
                           style={[
                             styles.modelName,
                             isDisabled && styles.textDisabled,
-                          ]}>
+                          ]}
+                          numberOfLines={1}>
                           {model.name}
                         </Text>
                         <Text
                           style={[
                             styles.modelDescription,
                             isDisabled && styles.textDisabled,
-                          ]}>
-                          {model.description}
+                          ]}
+                          numberOfLines={1}>
+                          {model.provider} • {model.contextWindow?.toLocaleString()} tokens
                         </Text>
                       </View>
                     </View>
@@ -251,12 +278,15 @@ export function ModelSelector({
                     </View>
                   </TouchableOpacity>
                 );
-              })}
-            </ScrollView>
+              }}
+              stickySectionHeadersEnabled={false}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.listContent}
+            />
 
             <TouchableOpacity
               style={styles.modalCloseButton}
-              onPress={() => setModalVisible(false)}
+              onPress={handleCloseModal}
               accessible={true}
               accessibilityLabel="Done selecting models"
               accessibilityRole="button"
@@ -264,7 +294,7 @@ export function ModelSelector({
             >
               <Text style={styles.modalCloseText}>Done</Text>
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </>
@@ -332,7 +362,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgPrimary,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    maxHeight: '70%',
+    height: '70%',
     borderTopWidth: 1,
     borderTopColor: colors.borderPrimary,
   },
@@ -354,7 +384,26 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   modelList: {
-    padding: spacing.md,
+    flex: 1,
+  },
+  listContent: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+  },
+  sectionHeader: {
+    backgroundColor: colors.bgPrimary,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderSecondary,
+  },
+  sectionTitle: {
+    fontFamily: typography.fontFamily.mono,
+    fontSize: typography.fontSize.xs,
+    color: colors.textTertiary,
+    letterSpacing: 1.5,
+    fontWeight: typography.fontWeight.semibold,
   },
   modelOption: {
     flexDirection: 'row',

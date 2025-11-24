@@ -3,9 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
 } from 'react-native';
+import {SafeFlatList as FlatList} from '../components/common/SafeFlatList';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -98,7 +98,7 @@ export function ConversationDetailScreen() {
 
       {/* Message List */}
       <FlatList
-        data={conversation.messages}
+        data={conversation?.messages || []}
         renderItem={renderMessage}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.messagesList}

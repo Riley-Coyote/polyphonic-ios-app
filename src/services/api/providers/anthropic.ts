@@ -175,6 +175,7 @@ export class AnthropicProvider extends BaseAPIProvider {
 
   /**
    * Override streaming for Anthropic's format
+   * React Native doesn't support ReadableStream, so we'll simulate streaming
    */
   async *createStreamingChatCompletion(
     messages: Message[],
@@ -184,76 +185,51 @@ export class AnthropicProvider extends BaseAPIProvider {
     const anthropicMessages = this.formatMessages(messages);
     const systemMessage = this.extractSystemMessage(messages);
 
+    // For React Native, we'll use non-streaming API and simulate streaming
+    // This is a workaround since React Native fetch doesn't support streaming
     const request: AnthropicRequest = {
       model: model.id,
       messages: anthropicMessages,
       max_tokens: options?.max_tokens || 4096,
       temperature: options?.temperature,
       top_p: options?.top_p,
-      stream: true,
+      stream: false, // Changed to false for React Native compatibility
       ...(systemMessage && { system: systemMessage }),
     };
 
-    const response = await fetch(`${this.config.baseURL}/messages`, {
-      method: 'POST',
-      headers: {
-        ...this.config.defaultHeaders,
-        ...this.getAuthHeaders(await this.getAPIKey()),
-        'Content-Type': 'application/json',
-        'Accept': 'text/event-stream',
-      },
-      body: JSON.stringify(request),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw this.createAPIError(errorData, response.status);
-    }
-
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-
-    if (!reader) {
-      throw new Error('No response body available for streaming');
-    }
-
-    let buffer = '';
-
     try {
-      while (true) {
-        const { done, value } = await reader.read();
+      const response = await fetch(`${this.config.baseURL}/messages`, {
+        method: 'POST',
+        headers: {
+          ...this.config.defaultHeaders,
+          ...this.getAuthHeaders(await this.getAPIKey()),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
 
-        if (done) {
-          break;
-        }
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-
-            try {
-              const event = JSON.parse(data);
-
-              if (event.type === 'content_block_delta') {
-                const text = event.delta?.text;
-                if (text) {
-                  yield text;
-                }
-              } else if (event.type === 'message_stop') {
-                return;
-              }
-            } catch (e) {
-              // Ignore parsing errors for non-JSON lines
-            }
-          }
-        }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw this.createAPIError(errorData, response.status);
       }
-    } finally {
-      reader.releaseLock();
+
+      const data = await response.json() as AnthropicResponse;
+
+      // Extract the full text from the response
+      const fullText = data.content
+        .filter(c => c.type === 'text')
+        .map(c => c.text)
+        .join('');
+
+      // Simulate streaming by yielding chunks of text
+      const chunkSize = 5; // Characters per chunk
+      for (let i = 0; i < fullText.length; i += chunkSize) {
+        yield fullText.slice(i, i + chunkSize);
+        // Add a small delay to simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -311,12 +287,7 @@ export class AnthropicProvider extends BaseAPIProvider {
 
       return true;
     } catch (error: any) {
-      // If it's an auth error, the connection itself is fine
-      if (error.status === 401) {
-        console.error('Anthropic API key is invalid');
-      } else {
-        console.error('Anthropic connection test failed:', error);
-      }
+      // Connection test failed - return false for any error
       return false;
     }
   }

@@ -1,4 +1,5 @@
 import {Theme} from '@react-navigation/native';
+import {Platform} from 'react-native';
 
 export const colors = {
   // Background colors - STRICTLY monochromatic
@@ -48,30 +49,58 @@ export const spacing = {
 
 export const typography = {
   fontFamily: {
-    mono: 'Courier New',
-    system: 'System',
+    // SF Mono for all monospace elements (headers, UI)
+    mono: Platform.select({
+      ios: 'SF Mono',
+      android: 'Roboto Mono',
+      default: 'Courier New',
+    }),
+    // SF Pro for body text (system font)
+    system: Platform.select({
+      ios: 'SF Pro Text',
+      android: 'Roboto',
+      default: 'System',
+    }),
+    // SF Pro Display for large text
+    display: Platform.select({
+      ios: 'SF Pro Display',
+      android: 'Roboto',
+      default: 'System',
+    }),
   },
   fontSize: {
-    xs: 11,
-    sm: 13,
-    base: 15,
-    lg: 17,
-    xl: 20,
-    xxl: 24,
-    xxxl: 32,
-    display: 48,
+    // Mobile-optimized sizes matching the HTML spec
+    xs: 11,     // Small labels, hints
+    sm: 13,     // Secondary text, captions
+    base: 15,   // Default body text
+    lg: 17,     // Emphasized body text
+    xl: 20,     // Section headers
+    xxl: 24,    // Main headers
+    xxxl: 32,   // Large titles
+    display: 40, // Display text (reduced from 48 for mobile)
   },
   fontWeight: {
-    light: '300' as const,
-    regular: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
+    ultralight: '200' as const,  // For large display text
+    light: '300' as const,        // Subtle headers
+    regular: '400' as const,      // Body text
+    medium: '500' as const,       // Emphasized text
+    semibold: '600' as const,    // Buttons, links
+    bold: '700' as const,         // Strong emphasis
+    heavy: '800' as const,        // Maximum emphasis
   },
   lineHeight: {
-    tight: 1.2,
-    normal: 1.5,
-    relaxed: 1.8,
+    tight: 1.2,    // Headers, compact UI
+    normal: 1.5,   // Body text
+    relaxed: 1.8,  // Readable content
+  },
+  letterSpacing: {
+    tightest: -0.5,  // Large display text
+    tight: -0.2,     // Headers
+    normal: 0,       // Body text
+    wide: 0.5,       // Emphasized text
+    wider: 2,        // Small caps, labels
+    widest: 4,       // Titles (POLYPHONIC)
+    ultra: 8,        // Display titles
   },
 };
 

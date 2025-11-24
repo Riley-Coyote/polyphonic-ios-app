@@ -3,13 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
   RefreshControl,
   SegmentedControl,
 } from 'react-native';
+import {SafeFlatList as FlatList} from '../components/common/SafeFlatList';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors, spacing, typography, borderRadius} from '../constants/theme';

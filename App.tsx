@@ -25,7 +25,7 @@ function App(): JSX.Element {
   useEffect(() => {
     // Always use dark mode for Polyphonic
     StatusBar.setBarStyle('light-content', true);
-    StatusBar.setBackgroundColor('#000000');
+    // StatusBar.setBackgroundColor is Android only
   }, []);
 
   return (

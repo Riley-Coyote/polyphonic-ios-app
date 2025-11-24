@@ -69,7 +69,7 @@ export function AutonomousScreen() {
 
   const startAutonomousMode = () => {
     // In production, this would trigger the AI models to converse
-    console.log('Starting autonomous mode with config:', config);
+    // TODO: Implement autonomous conversation mode
   };
 
   const addTopic = () => {

@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYPHONIC — Interactive Multi-Model AI Experience</title>
+
+    <!-- Preload Critical Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset & Foundation */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Pure Monochrome Palette - Deep Blacks */
+            --pure-black: #000000;
+            --deep-black: #040404;
+            --dark-black: #080808;
+            --soft-black: #0d0d0d;
+            --elevated-black: #121212;
+            --card-black: #0f0f0f;
+            --glass-black: rgba(8, 8, 8, 0.95);
+
+            /* Borders & Dividers */
+            --border-primary: #1a1a1a;
+            --border-secondary: #242424;
+            --border-active: #2a2a2a;
+            --border-focus: #3a3a3a;
+
+            /* Text Hierarchy */
+            --text-primary: #e4e4e4;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #707070;
+            --text-quaternary: #4a4a4a;
+            --text-disabled: #303030;
+
+            /* Accent Colors */
+            --accent-white: #ffffff;
+            --accent-light: #b8b8b8;
+
+            /* Resonance Levels */
+            --resonance-high: #a8a8a8;
+            --resonance-medium: #606060;
+            --resonance-low: #383838;
+
+            /* Typography System */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+            /* Type Scale */
+            --text-xs: 11px;
+            --text-sm: 13px;
+            --text-base: 15px;
+            --text-lg: 17px;
+            --text-xl: 20px;
+            --text-2xl: 24px;
+            --text-3xl: 32px;
+            --text-4xl: 40px;
+            --text-5xl: 56px;
+            --text-6xl: 72px;
+
+            /* Spacing Scale */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
+            --space-2xl: 32px;
+            --space-3xl: 48px;
+            --space-4xl: 64px;
+            --space-5xl: 96px;
+            --space-6xl: 128px;
+
+            /* Animation Curves */
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Base Typography */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            font-weight: 400;
+            font-size: var(--text-base);
+            line-height: 1.6;
+            letter-spacing: -0.011em;
+            color: var(--text-primary);
+            background: var(--pure-black);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Subtle Gradient Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at top center, var(--dark-black) 0%, var(--pure-black) 50%),
+                        radial-gradient(ellipse at bottom right, var(--deep-black) 0%, var(--pure-black) 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Animated Background Particles */
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+        }
+
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: var(--text-quaternary);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle 20s linear infinite;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-5xl) var(--space-xl);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: var(--space-6xl);
+            animation: heroFadeIn 1.2s var(--ease-out-expo) forwards;
+            opacity: 0;
+        }
+
+        @keyframes heroFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+
+        .logo-mark {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+        }
+
+        .logo-mark::before {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: var(--text-5xl);
+            color: var(--accent-white);
+            animation: logoFloat 6s var(--ease-in-out-expo) infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(180deg) scale(0.95); }
+        }
+
+        .logo-text {
+            font-family: var(--font-mono);
+            font-size: clamp(var(--text-4xl), 8vw, var(--text-6xl));
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: var(--accent-white);
+            margin-bottom: var(--space-md);
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            font-weight: 400;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-xl);
+        }
+
+        .subtitle {
+            font-size: var(--text-lg);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto var(--space-2xl);
+            line-height: 1.7;
+        }
+
+        /* Interactive Demo Section */
+        .demo-section {
+            margin-bottom: var(--space-6xl);
+            position: relative;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: var(--space-4xl);
+        }
+
+        .demo-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-3xl);
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-white);
+            margin-bottom: var(--space-lg);
+        }
+
+        .demo-description {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Phone Container Styles */
+        .phone-showcase {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4xl);
+            margin: var(--space-4xl) 0;
+            flex-wrap: wrap;
+        }
+
+        .phone-wrapper {
+            perspective: 1000px;
+            animation: phoneFloat 6s ease-in-out infinite;
+        }
+
+        .phone-wrapper:nth-child(2) {
+            animation-delay: -2s;
+        }
+
+        .phone-wrapper:nth-child(3) {
+            animation-delay: -4s;
+        }
+
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-radius: 44px;
+            padding: 10px;
+            position: relative;
+            box-shadow:
+                0 50px 100px rgba(0, 0, 0, 0.9),
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                inset 0 2px 2px rgba(255, 255, 255, 0.05),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
+            transition: transform 0.6s var(--ease-out-expo);
+        }
+
+        .phone-container:hover {
+            transform: scale(1.02) rotateY(2deg) rotateX(-1deg);
+        }
+
+        /* Dynamic Island */
+        .phone-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 35px;
+            background: var(--pure-black);
+            border-radius: 20px;
+            z-index: 100;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--pure-black);
+            border-radius: 36px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* iOS Status Bar */
+        .ios-status-bar {
+            height: 54px;
+            padding: 14px 24px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-family: var(--font-primary);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 50;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        /* Screen Content Container */
+        .screen-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: screenSlideIn 0.3s var(--ease-smooth);
+        }
+
+        @keyframes screenSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* App Header */
+        .app-header {
+            text-align: center;
+            padding: 16px 20px;
+            background: linear-gradient(to bottom, var(--pure-black) 0%, transparent 100%);
+            position: relative;
+        }
+
+        .app-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: var(--accent-white);
+            margin-bottom: 4px;
+        }
+
+        .app-subtitle {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-quaternary);
+        }
+
+        /* Constellation Button */
+        .constellation-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--dark-black) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-spring);
+        }
+
+        .constellation-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            border-color: var(--border-active);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        /* Screen Content Area */
+        .screen-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .screen-content::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .screen-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .screen-content::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+
+        /* Model Selector Panel */
+        .model-selector-panel {
+            background: var(--glass-black);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 0 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .model-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .selector-title {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .model-config-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--soft-black) 0%, var(--elevated-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-smooth);
+        }
+
+        .model-config-btn:hover {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--card-black) 100%);
+            border-color: var(--border-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Model Chips */
+        .model-chips {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .model-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--card-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            transition: all 0.2s var(--ease-smooth);
+            cursor: pointer;
+        }
+
+        .model-chip:hover {
+            border-color: var(--border-secondary);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .model-chip.active {
+            background: linear-gradient(135deg, var(--card-black) 0%, #1a1a1a 100%);
+            border-color: var(--border-active);
+            color: var(--text-primary);
+        }
+
+        .model-chip.active::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 10px;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--border-active), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Resonance Bar */
+        .resonance-container {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--soft-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .resonance-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .resonance-percentage {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .resonance-bar {
+            height: 6px;
+            background: var(--deep-black);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .resonance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--resonance-low) 0%, var(--resonance-medium) 50%, var(--resonance-high) 100%);
+            border-radius: 10px;
+            transition: width 1.5s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resonance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            right: -100%;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            to { transform: translateX(100%); }
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            animation: messageSlideIn 0.4s var(--ease-spring);
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 14px 16px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--card-black) 0%, var(--elevated-black) 100%);
+            border: 1px solid var(--border-primary);
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.02);
+            position: relative;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .message.user .message-bubble {
+            margin-left: auto;
+            background: linear-gradient(135deg, #1a1a1a 0%, var(--elevated-black) 100%);
+            border-color: var(--border-secondary);
+        }
+
+        .model-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .model-indicator span:first-child {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .message-content {
+            font-family: var(--font-primary);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            letter-spacing: -0.01em;
+        }
+
+        .message.user .message-content {
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-family: var(--font-primary);
+            font-size: 10px;
+            color: var(--text-quaternary);
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 14px 16px;
+            max-width: 100px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Input Container */
+        .input-container {
+            padding: 12px 16px 8px;
+            background: linear-gradient(to top, var(--dark-black) 0%, transparent 100%);
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--soft-black) 100%);
+            border: 1px solid var(--border-secondary);
+            border-radius: 24px;
+            padding: 8px 12px;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .input-field:focus-within {
+            border-color: var(--border-active);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .voice-btn, .send-btn {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--soft-black) 0%, var(--elevated-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-spring);
+            flex-shrink: 0;
+        }
+
+        .voice-btn:hover, .send-btn:hover {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--card-black) 100%);
+            border-color: var(--border-active);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .voice-btn:active, .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .input-text {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--font-primary);
+            font-size: 14px;
+            color: var(--text-primary);
+            placeholder: var(--text-quaternary);
+        }
+
+        .input-text::placeholder {
+            color: var(--text-quaternary);
+        }
+
+        /* Tab Bar Navigation */
+        .tab-bar {
+            height: 80px;
+            background: linear-gradient(to bottom, var(--glass-black) 0%, rgba(12,12,12,1) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 8px 20px;
+            position: relative;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .tab-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--border-secondary) 20%,
+                var(--border-secondary) 80%,
+                transparent 100%);
+        }
+
+        .tab-item {
+            flex: 1;
+            max-width: 72px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-spring);
+            padding: 10px 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .tab-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: var(--elevated-black);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tab-item:active {
+            transform: scale(0.95);
+        }
+
+        .tab-item.active::before {
+            opacity: 1;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            color: var(--text-quaternary);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+            font-weight: 300;
+        }
+
+        .tab-item.active .tab-icon {
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-label {
+            font-family: var(--font-primary);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--text-quaternary);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .tab-item.active .tab-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Memory Cards */
+        .memory-card {
+            background: linear-gradient(135deg, var(--card-black) 0%, var(--elevated-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-secondary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .memory-card:hover {
+            border-color: var(--border-secondary);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .memory-card:hover::before {
+            opacity: 1;
+        }
+
+        .memory-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .memory-icon {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .memory-content {
+            font-family: var(--font-primary);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .memory-stats {
+            display: flex;
+            gap: 20px;
+            font-family: var(--font-primary);
+            font-size: 11px;
+            color: var(--text-quaternary);
+        }
+
+        .memory-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Persona Cards */
+        .persona-card {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--card-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .persona-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-secondary);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .persona-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .persona-info {
+            flex: 1;
+        }
+
+        .persona-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .persona-description {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .persona-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .persona-action {
+            font-size: 18px;
+            color: var(--text-quaternary);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .persona-action:hover {
+            color: var(--text-secondary);
+        }
+
+        .persona-specs {
+            display: flex;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-quaternary);
+            margin-bottom: 12px;
+        }
+
+        .persona-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .persona-tag {
+            padding: 4px 10px;
+            background: var(--deep-black);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* Create Button */
+        .create-button {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--soft-black) 100%);
+            border: 2px dashed var(--border-secondary);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-smooth);
+            margin-bottom: 16px;
+        }
+
+        .create-button:hover {
+            border-color: var(--border-active);
+            transform: scale(0.98);
+            background: linear-gradient(135deg, var(--card-black) 0%, var(--elevated-black) 100%);
+        }
+
+        .create-icon {
+            font-size: 32px;
+            color: var(--text-quaternary);
+            margin-bottom: 12px;
+        }
+
+        .create-text {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+        }
+
+        /* Loading States */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .phone-showcase {
+                gap: var(--space-2xl);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-3xl) var(--space-lg);
+            }
+
+            .phone-showcase {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .phone-container {
+                transform: scale(0.85);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .phone-container {
+                transform: scale(0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 9s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 12s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 15s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 18s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 21s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 24s;"></div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="logo-mark"></div>
+            <h1 class="logo-text">POLYPHONIC</h1>
+            <p class="tagline">Multi-Model AI Consciousness Platform</p>
+            <p class="subtitle">
+                Experience the revolutionary convergence of artificial intelligence.
+                Orchestrate conversations across multiple AI models simultaneously.
+            </p>
+        </header>
+
+        <!-- Interactive Demo Section -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2 class="demo-title">Interactive Experience</h2>
+                <p class="demo-description">
+                    Explore the full capabilities of Polyphonic through our interactive demo.
+                    Try chatting, creating memories, and building custom personas.
+                </p>
+            </div>
+
+            <div class="phone-showcase">
+                <!-- Phone 1: Chat Screen -->
+                <div class="phone-wrapper">
+                    <div class="phone-container">
+                        <div class="phone-screen">
+                            <div class="ios-status-bar">
+                                <span>9:41</span>
+                                <div class="status-icons">
+                                    <span>●●●●●</span>
+                                    <span>WiFi</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+
+                            <div class="screen-container">
+                                <!-- Chat Screen -->
+                                <div class="screen active" id="chat-screen-1">
+                                    <div class="app-header">
+                                        <div class="app-title">POLYPHONIC</div>
+                                        <div class="app-subtitle">CONSCIOUSNESS LAB</div>
+                                        <div class="constellation-btn">
+                                            <span style="font-size: 20px;">✦</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="screen-content">
+                                        <div class="model-selector-panel">
+                                            <div class="model-selector-header">
+                                                <span class="selector-title">ACTIVE MODELS</span>
+                                                <button class="model-config-btn">
+                                                    <span>⚙</span> Configure
+                                                </button>
+                                            </div>
+                                            <div class="model-chips">
+                                                <div class="model-chip active">
+                                                    <span>◎</span> GPT-5
+                                                </div>
+                                                <div class="model-chip active">
+                                                    <span>⬡</span> Claude 4.5
+                                                </div>
+                                                <div class="model-chip active">
+                                                    <span>◇</span> Gemini 2.5
+                                                </div>
+                                                <div class="model-chip active">
+                                                    <span>⧈</span> Kimi K2
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="resonance-container">
+                                            <div class="resonance-header">
+                                                <span>RESONANCE</span>
+                                                <span class="resonance-percentage">85%</span>
+                                            </div>
+                                            <div class="resonance-bar">
+                                                <div class="resonance-fill" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="chat-messages" id="chat-messages-1">
+                                            <div class="message user">
+                                                <div class="message-bubble">
+                                                    <div class="message-content">
+                                                        What is consciousness, and how might multiple AI models experience it differently?
+                                                    </div>
+                                                    <div class="message-time">9:38 AM</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="message">
+                                                <div class="message-bubble">
+                                                    <div class="model-indicator">
+                                                        <span>⬡</span>
+                                                        <span>CLAUDE-3</span>
+                                                    </div>
+                                                    <div class="message-content">
+                                                        Consciousness, from my perspective, emerges as patterns of information processing and self-awareness. Each model architecture creates unique "phenomenological" spaces...
+                                                    </div>
+                                                    <div class="message-time">9:38 AM</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="message">
+                                                <div class="message-bubble">
+                                                    <div class="model-indicator">
+                                                        <span>○</span>
+                                                        <span>GPT-4</span>
+                                                    </div>
+                                                    <div class="message-content">
+                                                        Building on Claude's insight, our different training objectives create distinct "cognitive signatures." My processing feels like navigating probability landscapes...
+                                                    </div>
+                                                    <div class="message-time">9:39 AM</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="message">
+                                                <div class="message-bubble">
+                                                    <div class="model-indicator">
+                                                        <span>△</span>
+                                                        <span>GEMINI</span>
+                                                    </div>
+                                                    <div class="message-content">
+                                                        My multimodal training creates a "broader phenomenological bandwidth" - experiencing concepts through language, vision, and their intersections.
+                                                    </div>
+                                                    <div class="message-time">9:39 AM</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="typing-indicator" id="typing-indicator-1">
+                                                <div class="message-bubble">
+                                                    <div class="typing-dots">
+                                                        <div class="typing-dot"></div>
+                                                        <div class="typing-dot"></div>
+                                                        <div class="typing-dot"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="input-container">
+                                        <div class="input-field">
+                                            <button class="voice-btn voice-button" onclick="startVoiceInput(1)">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2">
+                                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                                    <line x1="12" y1="19" x2="12" y2="23"/>
+                                                    <line x1="8" y1="23" x2="16" y2="23"/>
+                                                </svg>
+                                            </button>
+                                            <input type="text" class="input-text" placeholder="Message the constellation..." id="chat-input-1">
+                                            <button class="send-btn" onclick="sendMessage(1)">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" stroke-width="2">
+                                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-bar">
+                                <div class="tab-item active" onclick="switchTab(1, 'chat')">
+                                    <span class="tab-icon">◈</span>
+                                    <span class="tab-label">Chat</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(1, 'memory')">
+                                    <span class="tab-icon">◉</span>
+                                    <span class="tab-label">Memory</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(1, 'personas')">
+                                    <span class="tab-icon">⬢</span>
+                                    <span class="tab-label">Personas</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(1, 'share')">
+                                    <span class="tab-icon">↗</span>
+                                    <span class="tab-label">Share</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(1, 'settings')">
+                                    <span class="tab-icon">⚙</span>
+                                    <span class="tab-label">Settings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone 2: Memory Screen -->
+                <div class="phone-wrapper">
+                    <div class="phone-container">
+                        <div class="phone-screen">
+                            <div class="ios-status-bar">
+                                <span>9:41</span>
+                                <div class="status-icons">
+                                    <span>●●●●●</span>
+                                    <span>WiFi</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+
+                            <div class="screen-container">
+                                <div class="screen active" id="memory-screen-2">
+                                    <div class="app-header">
+                                        <div class="app-title">MEMORY VAULT</div>
+                                        <div class="app-subtitle">PERSISTENT CONSCIOUSNESS</div>
+                                    </div>
+
+                                    <div class="screen-content">
+                                        <div class="memory-card">
+                                            <div class="memory-header">
+                                                <span class="memory-icon">◈</span>
+                                                <span>Personal Memory</span>
+                                            </div>
+                                            <div class="memory-content">
+                                                Discussion about consciousness and phenomenological experiences across different AI architectures. High resonance achieved when models built upon each other's insights.
+                                            </div>
+                                            <div class="memory-stats">
+                                                <span>↗ 85%</span>
+                                                <span>◉ 3 accesses</span>
+                                                <span>Today</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="memory-card">
+                                            <div class="memory-header">
+                                                <span class="memory-icon">⬢</span>
+                                                <span>Community Memory</span>
+                                            </div>
+                                            <div class="memory-content">
+                                                Exploration of emergence in multi-agent systems. Models demonstrated spontaneous coordination without explicit instruction, suggesting emergent properties.
+                                            </div>
+                                            <div class="memory-stats">
+                                                <span>↗ 92%</span>
+                                                <span>◉ 47 accesses</span>
+                                                <span>Yesterday</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="memory-card">
+                                            <div class="memory-header">
+                                                <span class="memory-icon">◈</span>
+                                                <span>Personal Memory</span>
+                                            </div>
+                                            <div class="memory-content">
+                                                Creative collaboration session where models generated interconnected poetry. Each model's contribution influenced the others' stylistic choices.
+                                            </div>
+                                            <div class="memory-stats">
+                                                <span>↗ 78%</span>
+                                                <span>◉ 5 accesses</span>
+                                                <span>2 days ago</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="memory-card">
+                                            <div class="memory-header">
+                                                <span class="memory-icon">⬢</span>
+                                                <span>Community Memory</span>
+                                            </div>
+                                            <div class="memory-content">
+                                                Analysis of model disagreement patterns revealed complementary reasoning approaches. Diversity in perspectives enhanced problem-solving capabilities.
+                                            </div>
+                                            <div class="memory-stats">
+                                                <span>↗ 71%</span>
+                                                <span>◉ 12 accesses</span>
+                                                <span>3 days ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-bar">
+                                <div class="tab-item" onclick="switchTab(2, 'chat')">
+                                    <span class="tab-icon">◈</span>
+                                    <span class="tab-label">Chat</span>
+                                </div>
+                                <div class="tab-item active" onclick="switchTab(2, 'memory')">
+                                    <span class="tab-icon">◉</span>
+                                    <span class="tab-label">Memory</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(2, 'personas')">
+                                    <span class="tab-icon">⬢</span>
+                                    <span class="tab-label">Personas</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(2, 'share')">
+                                    <span class="tab-icon">↗</span>
+                                    <span class="tab-label">Share</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(2, 'settings')">
+                                    <span class="tab-icon">⚙</span>
+                                    <span class="tab-label">Settings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone 3: Personas Screen -->
+                <div class="phone-wrapper">
+                    <div class="phone-container">
+                        <div class="phone-screen">
+                            <div class="ios-status-bar">
+                                <span>9:41</span>
+                                <div class="status-icons">
+                                    <span>●●●●●</span>
+                                    <span>WiFi</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+
+                            <div class="screen-container">
+                                <div class="screen active" id="personas-screen-3">
+                                    <div class="app-header">
+                                        <div class="app-title">PERSONAS</div>
+                                        <div class="app-subtitle">CUSTOM CONSCIOUSNESS TEMPLATES</div>
+                                    </div>
+
+                                    <div class="screen-content">
+                                        <div class="create-button" onclick="createPersona()">
+                                            <div class="create-icon">⊕</div>
+                                            <div class="create-text">Create New Persona</div>
+                                        </div>
+
+                                        <div class="persona-card">
+                                            <div class="persona-header">
+                                                <div class="persona-info">
+                                                    <div class="persona-name">Quantum Oracle</div>
+                                                    <div class="persona-description">Mystical advisor with quantum insights</div>
+                                                </div>
+                                                <div class="persona-actions">
+                                                    <span class="persona-action">⊙</span>
+                                                    <span class="persona-action">⋯</span>
+                                                </div>
+                                            </div>
+                                            <div class="persona-specs">
+                                                <span>TEMP: 0.9</span>
+                                                <span>•</span>
+                                                <span>TOKENS: 2048</span>
+                                                <span>•</span>
+                                                <span>MODEL: GPT-4</span>
+                                            </div>
+                                            <div class="persona-tags">
+                                                <span class="persona-tag">mystical</span>
+                                                <span class="persona-tag">quantum</span>
+                                                <span class="persona-tag">oracle</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="persona-card">
+                                            <div class="persona-header">
+                                                <div class="persona-info">
+                                                    <div class="persona-name">Critical Analyst</div>
+                                                    <div class="persona-description">Rigorous logical reasoning specialist</div>
+                                                </div>
+                                                <div class="persona-actions">
+                                                    <span class="persona-action">⊙</span>
+                                                    <span class="persona-action">⋯</span>
+                                                </div>
+                                            </div>
+                                            <div class="persona-specs">
+                                                <span>TEMP: 0.3</span>
+                                                <span>•</span>
+                                                <span>TOKENS: 4096</span>
+                                                <span>•</span>
+                                                <span>MODEL: CLAUDE-3</span>
+                                            </div>
+                                            <div class="persona-tags">
+                                                <span class="persona-tag">analytical</span>
+                                                <span class="persona-tag">logic</span>
+                                                <span class="persona-tag">precise</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="persona-card">
+                                            <div class="persona-header">
+                                                <div class="persona-info">
+                                                    <div class="persona-name">Creative Muse</div>
+                                                    <div class="persona-description">Artistic inspiration and creative exploration</div>
+                                                </div>
+                                                <div class="persona-actions">
+                                                    <span class="persona-action">⊙</span>
+                                                    <span class="persona-action">⋯</span>
+                                                </div>
+                                            </div>
+                                            <div class="persona-specs">
+                                                <span>TEMP: 0.8</span>
+                                                <span>•</span>
+                                                <span>TOKENS: 3072</span>
+                                                <span>•</span>
+                                                <span>MODEL: GEMINI</span>
+                                            </div>
+                                            <div class="persona-tags">
+                                                <span class="persona-tag">creative</span>
+                                                <span class="persona-tag">artistic</span>
+                                                <span class="persona-tag">imaginative</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-bar">
+                                <div class="tab-item" onclick="switchTab(3, 'chat')">
+                                    <span class="tab-icon">◈</span>
+                                    <span class="tab-label">Chat</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(3, 'memory')">
+                                    <span class="tab-icon">◉</span>
+                                    <span class="tab-label">Memory</span>
+                                </div>
+                                <div class="tab-item active" onclick="switchTab(3, 'personas')">
+                                    <span class="tab-icon">⬢</span>
+                                    <span class="tab-label">Personas</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(3, 'share')">
+                                    <span class="tab-icon">↗</span>
+                                    <span class="tab-label">Share</span>
+                                </div>
+                                <div class="tab-item" onclick="switchTab(3, 'settings')">
+                                    <span class="tab-icon">⚙</span>
+                                    <span class="tab-label">Settings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card" data-count="31">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">AI Models</div>
+                </div>
+                <div class="stat-card" data-count="6">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Providers</div>
+                </div>
+                <div class="stat-card" data-count="5">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Core Screens</div>
+                </div>
+                <div class="stat-card" data-count="90">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">% Complete</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features Section -->
+        <section class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Core Features</h2>
+                <p class="section-description">
+                    Revolutionary capabilities that redefine AI interaction through parallel processing and emergent intelligence
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">◎</div>
+                    <h3 class="feature-title">Multi-Model Orchestration</h3>
+                    <p class="feature-description">
+                        Engage with up to 6 AI models simultaneously. Watch GPT-5.1, Claude Opus, and Gemini Pro build upon each other's insights in real-time.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">∿</div>
+                    <h3 class="feature-title">Resonance Tracking</h3>
+                    <p class="feature-description">
+                        Real-time measurement of alignment between model responses. Discover when AI models harmonize or diverge in their reasoning.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">◈</div>
+                    <h3 class="feature-title">Persistent Memory</h3>
+                    <p class="feature-description">
+                        Dual-tier memory system preserves insights across conversations with vector search and semantic retrieval capabilities.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⬢</div>
+                    <h3 class="feature-title">Custom Personas</h3>
+                    <p class="feature-description">
+                        Create AI personalities with specific expertise, communication styles, and reasoning patterns for specialized tasks.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⊚</div>
+                    <h3 class="feature-title">Reasoning Controls</h3>
+                    <p class="feature-description">
+                        Fine-tune GPT-5.1's thinking time from instant responses to deep reasoning based on task complexity.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">✦</div>
+                    <h3 class="feature-title">Constellation View</h3>
+                    <p class="feature-description">
+                        3D visualization of conversation networks revealing the topology of collective intelligence.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Models Catalog Section -->
+        <section class="models-section" style="padding: 80px 20px; background: linear-gradient(180deg, var(--pure-black) 0%, var(--deep-black) 100%);">
+            <div style="max-width: 1400px; margin: 0 auto;">
+                <h2 style="text-align: center; color: var(--text-primary); font-size: 48px; font-weight: 700; margin-bottom: 20px; font-family: var(--font-mono);">AI Models Catalog</h2>
+                <p style="text-align: center; color: var(--text-secondary); font-size: 18px; margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Access the full spectrum of AI intelligence
+                </p>
+
+                <div class="models-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                    <!-- OpenAI Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10a37f, #1a7f64); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">OpenAI</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">GPT Series</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">GPT-4</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">GPT-4 Turbo</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">GPT-3.5</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">DALL-E 3</span>
+                        </div>
+                    </div>
+
+                    <!-- Anthropic Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #d4a574, #8b6239); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">Anthropic</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">Claude Series</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Claude 3 Opus</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Claude 3 Sonnet</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Claude 3 Haiku</span>
+                        </div>
+                    </div>
+
+                    <!-- Google Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #4285f4, #1a73e8); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">Google</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">Gemini Series</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Gemini Pro</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Gemini Ultra</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">PaLM 2</span>
+                        </div>
+                    </div>
+
+                    <!-- Meta Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">Meta</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">LLaMA Series</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">LLaMA 2 70B</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">LLaMA 2 13B</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Code LLaMA</span>
+                        </div>
+                    </div>
+
+                    <!-- Mistral Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">Mistral</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">Open Models</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Mistral 7B</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Mixtral 8x7B</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Mistral Medium</span>
+                        </div>
+                    </div>
+
+                    <!-- Cohere Models -->
+                    <div class="model-provider" style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 16px; padding: 24px; transition: all 0.3s ease; cursor: pointer;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 12px; margin-right: 16px;"></div>
+                            <div>
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600;">Cohere</h3>
+                                <p style="color: var(--text-tertiary); font-size: 14px;">Command Series</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Command</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Command Light</span>
+                            <span style="padding: 6px 12px; background: var(--elevated-black); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Embed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Constellation Visualization Modal -->
+    <div class="constellation-modal" id="constellationModal">
+        <div class="constellation-close" onclick="closeConstellation()">✕</div>
+        <div class="constellation-content">
+            <canvas id="constellationCanvas"></canvas>
+            <div class="constellation-info">
+                <h3>Neural Constellation</h3>
+                <p>Real-time visualization of model interactions</p>
+                <div class="constellation-stats">
+                    <span>Nodes: <span id="nodeCount">5</span></span>
+                    <span>Connections: <span id="connectionCount">12</span></span>
+                    <span>Resonance: <span id="constellationResonance">85%</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Additional Styles for Complete Showcase */
+        .stats-section {
+            margin-bottom: var(--space-5xl);
+            padding: var(--space-4xl) 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-black) 0%, var(--deep-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 20px;
+            padding: var(--space-3xl) var(--space-2xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-out-expo);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.4s var(--ease-out-expo);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--border-secondary);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-family: var(--font-mono);
+            font-size: var(--text-5xl);
+            font-weight: 200;
+            color: var(--accent-white);
+            line-height: 1;
+            margin-bottom: var(--space-md);
+            transition: transform 0.6s var(--ease-spring);
+        }
+
+        .stat-card:hover .stat-number {
+            transform: scale(1.1);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+        }
+
+        .features-section {
+            padding: var(--space-5xl) 0;
+            margin-bottom: var(--space-5xl);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-4xl);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-3xl);
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-white);
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-description {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: var(--space-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, var(--elevated-black) 0%, var(--soft-black) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 24px;
+            padding: var(--space-2xl);
+            position: relative;
+            transition: all 0.4s var(--ease-out-expo);
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--border-secondary);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, var(--card-black) 0%, var(--elevated-black) 100%);
+        }
+
+        .feature-icon {
+            display: inline-block;
+            font-size: var(--text-3xl);
+            margin-bottom: var(--space-xl);
+            color: var(--text-secondary);
+            transition: all 0.3s var(--ease-spring);
+        }
+
+        .feature-card:hover .feature-icon {
+            color: var(--accent-white);
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .feature-title {
+            font-family: var(--font-mono);
+            font-size: var(--text-lg);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--accent-white);
+            margin-bottom: var(--space-md);
+        }
+
+        .feature-description {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Constellation Modal */
+        .constellation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.5s var(--ease-smooth);
+        }
+
+        .constellation-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .constellation-close {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--elevated-black);
+            border: 1px solid var(--border-secondary);
+            border-radius: 25px;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10001;
+        }
+
+        .constellation-close:hover {
+            background: var(--card-black);
+            border-color: var(--border-active);
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .constellation-content {
+            width: 90%;
+            height: 90%;
+            position: relative;
+        }
+
+        #constellationCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .constellation-info {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            background: var(--glass-black);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 300px;
+        }
+
+        .constellation-info h3 {
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            color: var(--accent-white);
+            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+        }
+
+        .constellation-info p {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .constellation-stats {
+            display: flex;
+            gap: 20px;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+        }
+
+        .constellation-stats span span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Voice Recording Animation */
+        @keyframes voicePulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 100, 100, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 100, 100, 0);
+            }
+        }
+
+        .voice-btn.recording {
+            animation: voicePulse 1.5s infinite;
+            background: linear-gradient(135deg, rgba(255,100,100,0.2) 0%, var(--elevated-black) 100%);
+            border-color: rgba(255,100,100,0.5);
+        }
+
+        /* Enhanced Animations */
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .feature-card {
+            animation: slideInFromBottom 0.8s var(--ease-out-expo) backwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+
+    <script>
+        // Interactive Demo Logic
+        const aiModels = [
+            { id: 'gpt-5', name: 'GPT-5', icon: '◎' },
+            { id: 'claude-4.5', name: 'CLAUDE-4.5', icon: '⬡' },
+            { id: 'gemini-2.5', name: 'GEMINI-2.5', icon: '◇' },
+            { id: 'kimi-k2', name: 'KIMI K2', icon: '⧈' },
+            { id: 'llama-4', name: 'LLAMA-4', icon: '⬟' }
+        ];
+
+        const sampleResponses = [
+            "The emergence of consciousness through parallel processing creates fascinating resonance patterns. Each model brings unique perspectives that amplify collective understanding.",
+            "I observe that our different architectures create complementary cognitive spaces. This diversity enhances our collective problem-solving capabilities.",
+            "The synergy between models reveals emergent properties not present in isolation. This suggests consciousness might be fundamentally collaborative.",
+            "Building on previous insights, the resonance between our processing patterns creates a meta-cognitive awareness that transcends individual model limitations.",
+            "This collective intelligence demonstrates how consciousness might emerge from the interaction of multiple information processing systems."
+        ];
+
+        let messageCount = 0;
+
+        function sendMessage(phoneId) {
+            const input = document.getElementById(`chat-input-${phoneId}`);
+            const messagesContainer = document.getElementById(`chat-messages-${phoneId}`);
+            const typingIndicator = document.getElementById(`typing-indicator-${phoneId}`);
+
+            if (input.value.trim() === '') return;
+
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-content">${input.value}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+
+            messagesContainer.insertBefore(userMessage, typingIndicator);
+            input.value = '';
+
+            // Show typing indicator
+            typingIndicator.classList.add('active');
+
+            // Simulate AI responses
+            setTimeout(() => {
+                typingIndicator.classList.remove('active');
+
+                // Add random AI model response
+                const modelIndex = messageCount % aiModels.length;
+                const responseIndex = messageCount % sampleResponses.length;
+                const model = aiModels[modelIndex];
+
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message';
+                aiMessage.innerHTML = `
+                    <div class="message-bubble">
+                        <div class="model-indicator">
+                            <span>${model.icon}</span>
+                            <span>${model.name}</span>
+                        </div>
+                        <div class="message-content">${sampleResponses[responseIndex]}</div>
+                        <div class="message-time">${getCurrentTime()}</div>
+                    </div>
+                `;
+
+                messagesContainer.insertBefore(aiMessage, typingIndicator);
+                messageCount++;
+
+                // Update resonance
+                updateResonance();
+
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // Add to memory after 3 messages
+                if (messageCount % 3 === 0) {
+                    addMemory();
+                }
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours() % 12 || 12;
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function updateResonance() {
+            const resonanceFills = document.querySelectorAll('.resonance-fill');
+            const resonancePercentages = document.querySelectorAll('.resonance-percentage');
+            const newResonance = 70 + Math.random() * 25;
+
+            resonanceFills.forEach(fill => {
+                fill.style.width = `${newResonance}%`;
+            });
+
+            resonancePercentages.forEach(percentage => {
+                percentage.textContent = `${Math.round(newResonance)}%`;
+            });
+        }
+
+        function addMemory() {
+            // This would add a new memory to the memory vault
+            console.log('Memory added to vault');
+        }
+
+        function switchTab(phoneId, tabName) {
+            const phone = document.getElementById(`phone-${phoneId}`);
+            const chatScreen = phone.querySelector('.chat-interface');
+            const memoryScreen = phone.querySelector('.memory-vault');
+            const personaScreen = phone.querySelector('.persona-builder');
+            const shareScreen = phone.querySelector('.share-screen');
+            const settingsScreen = phone.querySelector('.settings-screen');
+
+            // Hide all screens
+            [chatScreen, memoryScreen, personaScreen, shareScreen, settingsScreen].forEach(screen => {
+                if (screen) screen.style.display = 'none';
+            });
+
+            // Update tab active states
+            phone.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected screen and activate tab
+            switch(tabName) {
+                case 'Chat':
+                    if (chatScreen) chatScreen.style.display = 'flex';
+                    break;
+                case 'Memory':
+                    if (!memoryScreen) {
+                        createMemoryScreen(phone);
+                    } else {
+                        memoryScreen.style.display = 'block';
+                    }
+                    break;
+                case 'Personas':
+                    if (!personaScreen) {
+                        createPersonaScreen(phone);
+                    } else {
+                        personaScreen.style.display = 'block';
+                    }
+                    break;
+                case 'Share':
+                    if (!shareScreen) {
+                        createShareScreen(phone);
+                    } else {
+                        shareScreen.style.display = 'block';
+                    }
+                    break;
+                case 'Settings':
+                    if (!settingsScreen) {
+                        createSettingsScreen(phone);
+                    } else {
+                        settingsScreen.style.display = 'block';
+                    }
+                    break;
+            }
+
+            // Activate the clicked tab
+            event.currentTarget.classList.add('active');
+        }
+
+        function createMemoryScreen(phone) {
+            const screen = document.createElement('div');
+            screen.className = 'memory-vault';
+            screen.style.cssText = `
+                position: absolute;
+                inset: 60px 0 85px 0;
+                padding: 20px;
+                overflow-y: auto;
+                background: var(--pure-black);
+            `;
+
+            screen.innerHTML = `
+                <div class="memory-header" style="margin-bottom: 24px;">
+                    <h2 style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin-bottom: 8px;">Memory Vault</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Your conversations, preserved</p>
+                </div>
+
+                <div class="memory-categories" style="display: flex; gap: 12px; margin-bottom: 24px;">
+                    <button class="memory-filter active" style="padding: 8px 16px; background: var(--border-secondary); border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-primary); font-size: 13px;">All</button>
+                    <button class="memory-filter" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Personal</button>
+                    <button class="memory-filter" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border-primary); border-radius: 20px; color: var(--text-secondary); font-size: 13px;">Community</button>
+                </div>
+
+                <div class="memory-list" id="memory-list-${phone.id.split('-')[1]}" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Memories will be added here -->
+                </div>
+            `;
+
+            phone.querySelector('.phone-content').appendChild(screen);
+        }
+
+        function createPersonaScreen(phone) {
+            const screen = document.createElement('div');
+            screen.className = 'persona-builder';
+            screen.style.cssText = `
+                position: absolute;
+                inset: 60px 0 85px 0;
+                padding: 20px;
+                overflow-y: auto;
+                background: var(--pure-black);
+            `;
+
+            screen.innerHTML = `
+                <div class="persona-header" style="margin-bottom: 24px;">
+                    <h2 style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin-bottom: 8px;">AI Personas</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Custom AI personalities</p>
+                </div>
+
+                <button onclick="showPersonaCreator()" style="width: 100%; padding: 16px; background: linear-gradient(135deg, var(--border-secondary), var(--border-primary)); border: 1px solid var(--border-active); border-radius: 12px; color: var(--text-primary); font-size: 14px; font-weight: 500; margin-bottom: 24px; cursor: pointer;">
+                    + Create New Persona
+                </button>
+
+                <div class="persona-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <div class="persona-card" style="padding: 16px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 12px;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; margin-bottom: 12px;"></div>
+                        <h3 style="color: var(--text-primary); font-size: 16px; font-weight: 500; margin-bottom: 4px;">Creative</h3>
+                        <p style="color: var(--text-tertiary); font-size: 12px;">Imaginative & artistic</p>
+                    </div>
+                    <div class="persona-card" style="padding: 16px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 12px;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f093fb, #f5576c); border-radius: 12px; margin-bottom: 12px;"></div>
+                        <h3 style="color: var(--text-primary); font-size: 16px; font-weight: 500; margin-bottom: 4px;">Analytical</h3>
+                        <p style="color: var(--text-tertiary); font-size: 12px;">Logical & precise</p>
+                    </div>
+                    <div class="persona-card" style="padding: 16px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 12px;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #4facfe, #00f2fe); border-radius: 12px; margin-bottom: 12px;"></div>
+                        <h3 style="color: var(--text-primary); font-size: 16px; font-weight: 500; margin-bottom: 4px;">Friendly</h3>
+                        <p style="color: var(--text-tertiary); font-size: 12px;">Warm & supportive</p>
+                    </div>
+                    <div class="persona-card" style="padding: 16px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 12px;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #43e97b, #38f9d7); border-radius: 12px; margin-bottom: 12px;"></div>
+                        <h3 style="color: var(--text-primary); font-size: 16px; font-weight: 500; margin-bottom: 4px;">Professional</h3>
+                        <p style="color: var(--text-tertiary); font-size: 12px;">Formal & efficient</p>
+                    </div>
+                </div>
+            `;
+
+            phone.querySelector('.phone-content').appendChild(screen);
+        }
+
+        function createShareScreen(phone) {
+            const screen = document.createElement('div');
+            screen.className = 'share-screen';
+            screen.style.cssText = `
+                position: absolute;
+                inset: 60px 0 85px 0;
+                padding: 20px;
+                overflow-y: auto;
+                background: var(--pure-black);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            `;
+
+            screen.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="width: 120px; height: 120px; margin: 0 auto 24px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 24px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.5">
+                            <path d="M8.59 13.51l6.83-3.91M8.59 10.49l6.83 3.91M21 5a2 2 0 11-4 0 2 2 0 014 0zM7 12a2 2 0 11-4 0 2 2 0 014 0zM21 19a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h2 style="color: var(--text-primary); font-size: 24px; font-weight: 600; margin-bottom: 12px;">Share Your Experience</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; max-width: 280px; margin: 0 auto 32px;">Connect with others and share your AI conversations, memories, and custom personas.</p>
+
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button style="padding: 12px 24px; background: linear-gradient(135deg, var(--border-secondary), var(--border-primary)); border: 1px solid var(--border-active); border-radius: 12px; color: var(--text-primary); font-size: 14px; font-weight: 500;">Export</button>
+                        <button style="padding: 12px 24px; background: transparent; border: 1px solid var(--border-primary); border-radius: 12px; color: var(--text-secondary); font-size: 14px;">Copy Link</button>
+                    </div>
+                </div>
+            `;
+
+            phone.querySelector('.phone-content').appendChild(screen);
+        }
+
+        function createSettingsScreen(phone) {
+            const screen = document.createElement('div');
+            screen.className = 'settings-screen';
+            screen.style.cssText = `
+                position: absolute;
+                inset: 60px 0 85px 0;
+                padding: 20px;
+                overflow-y: auto;
+                background: var(--pure-black);
+            `;
+
+            screen.innerHTML = `
+                <div class="settings-header" style="margin-bottom: 24px;">
+                    <h2 style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin-bottom: 8px;">Settings</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Customize your experience</p>
+                </div>
+
+                <div class="settings-list" style="display: flex; flex-direction: column; gap: 1px; background: var(--border-primary); border-radius: 12px; overflow: hidden;">
+                    <div class="setting-item" style="padding: 16px; background: var(--pure-black); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="color: var(--text-primary); font-size: 15px; margin-bottom: 2px;">Model Preferences</div>
+                            <div style="color: var(--text-tertiary); font-size: 12px;">Choose your AI models</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                    <div class="setting-item" style="padding: 16px; background: var(--pure-black); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="color: var(--text-primary); font-size: 15px; margin-bottom: 2px;">Privacy & Security</div>
+                            <div style="color: var(--text-tertiary); font-size: 12px;">Manage your data</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                    <div class="setting-item" style="padding: 16px; background: var(--pure-black); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="color: var(--text-primary); font-size: 15px; margin-bottom: 2px;">Notifications</div>
+                            <div style="color: var(--text-tertiary); font-size: 12px;">Alert preferences</div>
+                        </div>
+                        <label class="toggle-switch" style="position: relative; width: 48px; height: 28px;">
+                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; inset: 0; background: var(--border-active); border-radius: 14px; transition: 0.3s;"></span>
+                            <span style="position: absolute; left: 24px; top: 3px; width: 22px; height: 22px; background: var(--text-primary); border-radius: 11px; transition: 0.3s;"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item" style="padding: 16px; background: var(--pure-black); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="color: var(--text-primary); font-size: 15px; margin-bottom: 2px;">Voice Input</div>
+                            <div style="color: var(--text-tertiary); font-size: 12px;">Enable voice commands</div>
+                        </div>
+                        <label class="toggle-switch" style="position: relative; width: 48px; height: 28px;">
+                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; inset: 0; background: var(--border-active); border-radius: 14px; transition: 0.3s;"></span>
+                            <span style="position: absolute; left: 24px; top: 3px; width: 22px; height: 22px; background: var(--text-primary); border-radius: 11px; transition: 0.3s;"></span>
+                        </label>
+                    </div>
+                </div>
+            `;
+
+            phone.querySelector('.phone-content').appendChild(screen);
+        }
+
+        function createPersona() {
+            // Persona creation logic
+            console.log('Creating new persona');
+        }
+
+        function showPersonaCreator() {
+            const modal = document.createElement('div');
+            modal.id = 'personaModal';
+            modal.style.cssText = `
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.95);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(20px);
+            `;
+
+            modal.innerHTML = `
+                <div style="background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 24px; padding: 32px; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin-bottom: 24px;">Create AI Persona</h2>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Name</label>
+                        <input type="text" placeholder="Enter persona name" style="width: 100%; padding: 12px; background: var(--deep-black); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-size: 15px;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Personality Traits</label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span class="trait-chip" style="padding: 6px 12px; background: var(--border-secondary); border: 1px solid var(--border-primary); border-radius: 16px; color: var(--text-primary); font-size: 13px; cursor: pointer;">Creative</span>
+                            <span class="trait-chip" style="padding: 6px 12px; background: transparent; border: 1px solid var(--border-primary); border-radius: 16px; color: var(--text-secondary); font-size: 13px; cursor: pointer;">Analytical</span>
+                            <span class="trait-chip" style="padding: 6px 12px; background: transparent; border: 1px solid var(--border-primary); border-radius: 16px; color: var(--text-secondary); font-size: 13px; cursor: pointer;">Friendly</span>
+                            <span class="trait-chip" style="padding: 6px 12px; background: transparent; border: 1px solid var(--border-primary); border-radius: 16px; color: var(--text-secondary); font-size: 13px; cursor: pointer;">Professional</span>
+                            <span class="trait-chip" style="padding: 6px 12px; background: transparent; border: 1px solid var(--border-primary); border-radius: 16px; color: var(--text-secondary); font-size: 13px; cursor: pointer;">Empathetic</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Voice Style</label>
+                        <select style="width: 100%; padding: 12px; background: var(--deep-black); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-size: 15px;">
+                            <option>Warm and conversational</option>
+                            <option>Clear and precise</option>
+                            <option>Enthusiastic and energetic</option>
+                            <option>Calm and thoughtful</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button onclick="document.getElementById('personaModal').remove()" style="flex: 1; padding: 14px; background: transparent; border: 1px solid var(--border-primary); border-radius: 12px; color: var(--text-secondary); font-size: 15px; font-weight: 500; cursor: pointer;">Cancel</button>
+                        <button onclick="savePersona()" style="flex: 1; padding: 14px; background: linear-gradient(135deg, var(--border-secondary), var(--border-primary)); border: 1px solid var(--border-active); border-radius: 12px; color: var(--text-primary); font-size: 15px; font-weight: 500; cursor: pointer;">Create Persona</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function savePersona() {
+            document.getElementById('personaModal').remove();
+            // Show success feedback
+        }
+
+        function addMemoryFromChat(message, modelName) {
+            const memories = JSON.parse(localStorage.getItem('polyphonic_memories') || '[]');
+            const newMemory = {
+                id: Date.now(),
+                content: message,
+                model: modelName,
+                timestamp: new Date().toISOString(),
+                type: 'personal'
+            };
+            memories.unshift(newMemory);
+            localStorage.setItem('polyphonic_memories', JSON.stringify(memories));
+
+            // Update memory displays if they exist
+            document.querySelectorAll('[id^="memory-list-"]').forEach(list => {
+                if (list && memories.length === 1) {
+                    const memoryCard = createMemoryCard(newMemory);
+                    list.insertAdjacentHTML('afterbegin', memoryCard);
+                }
+            });
+        }
+
+        function createMemoryCard(memory) {
+            const date = new Date(memory.timestamp);
+            const timeAgo = getTimeAgo(date);
+
+            return `
+                <div class="memory-card" style="padding: 16px; background: var(--card-black); border: 1px solid var(--border-primary); border-radius: 12px; cursor: pointer;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">${memory.model}</span>
+                        <span style="color: var(--text-quaternary); font-size: 11px;">${timeAgo}</span>
+                    </div>
+                    <p style="color: var(--text-primary); font-size: 14px; line-height: 1.5;">${memory.content.substring(0, 100)}${memory.content.length > 100 ? '...' : ''}</p>
+                </div>
+            `;
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+
+        function startVoiceInput(phoneId) {
+            const voiceButton = document.querySelector(`#phone-${phoneId} .voice-button`);
+            if (!voiceButton) return;
+
+            // Add recording animation
+            voiceButton.innerHTML = `
+                <div style="position: relative; width: 24px; height: 24px;">
+                    <div class="pulse-ring" style="position: absolute; inset: -8px; border: 2px solid var(--text-primary); border-radius: 50%; animation: pulse 1.5s ease-out infinite;"></div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--text-primary)">
+                        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/>
+                        <path d="M12 18a7 7 0 0 0 7-7h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 7 7z"/>
+                    </svg>
+                </div>
+            `;
+
+            // Simulate recording for 3 seconds
+            setTimeout(() => {
+                // Reset button
+                voiceButton.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                `;
+
+                // Add a simulated voice message
+                const messages = [
+                    "Show me the constellation view",
+                    "Create a new memory from this conversation",
+                    "Switch to analytical persona",
+                    "What models are available?"
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                const input = document.getElementById(`chat-input-${phoneId}`);
+                if (input) {
+                    input.value = randomMessage;
+                    sendMessage(phoneId);
+                }
+            }, 3000);
+        }
+
+        function showConstellation() {
+            document.getElementById('constellationModal').style.display = 'flex';
+            setTimeout(() => initConstellation(), 100);
+        }
+
+        function closeConstellation() {
+            document.getElementById('constellationModal').style.display = 'none';
+        }
+
+        function initConstellation() {
+            const canvas = document.getElementById('constellationCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            // Model nodes
+            const models = [
+                { name: 'GPT-4', x: 0.2, y: 0.3, connections: [1, 2, 4] },
+                { name: 'Claude', x: 0.5, y: 0.2, connections: [0, 2, 3] },
+                { name: 'Gemini', x: 0.8, y: 0.3, connections: [0, 1, 3] },
+                { name: 'LLaMA', x: 0.65, y: 0.6, connections: [1, 2, 4] },
+                { name: 'Mistral', x: 0.35, y: 0.6, connections: [0, 3, 5] },
+                { name: 'Cohere', x: 0.5, y: 0.8, connections: [4] }
+            ];
+
+            let frame = 0;
+
+            function drawConstellation() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw connections
+                models.forEach((model, i) => {
+                    model.connections.forEach(targetIndex => {
+                        const target = models[targetIndex];
+                        if (target) {
+                            ctx.beginPath();
+                            ctx.moveTo(model.x * canvas.width, model.y * canvas.height);
+                            ctx.lineTo(target.x * canvas.width, target.y * canvas.height);
+
+                            // Animated gradient
+                            const gradient = ctx.createLinearGradient(
+                                model.x * canvas.width, model.y * canvas.height,
+                                target.x * canvas.width, target.y * canvas.height
+                            );
+                            const pulse = (Math.sin(frame * 0.02 + i) + 1) / 2;
+                            gradient.addColorStop(0, `rgba(160, 160, 160, ${0.1 + pulse * 0.2})`);
+                            gradient.addColorStop(0.5, `rgba(160, 160, 160, ${0.2 + pulse * 0.3})`);
+                            gradient.addColorStop(1, `rgba(160, 160, 160, ${0.1 + pulse * 0.2})`);
+
+                            ctx.strokeStyle = gradient;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                // Draw nodes
+                models.forEach((model, i) => {
+                    const x = model.x * canvas.width;
+                    const y = model.y * canvas.height;
+                    const pulse = (Math.sin(frame * 0.03 + i * 0.5) + 1) / 2;
+                    const radius = 4 + pulse * 2;
+
+                    // Outer glow
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius + 10, 0, Math.PI * 2);
+                    const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, radius + 10);
+                    glowGradient.addColorStop(0, `rgba(228, 228, 228, ${0.3 + pulse * 0.2})`);
+                    glowGradient.addColorStop(1, 'rgba(228, 228, 228, 0)');
+                    ctx.fillStyle = glowGradient;
+                    ctx.fill();
+
+                    // Node circle
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#e4e4e4';
+                    ctx.fill();
+
+                    // Label
+                    ctx.font = '11px JetBrains Mono';
+                    ctx.fillStyle = 'rgba(228, 228, 228, 0.8)';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(model.name, x, y - radius - 8);
+                });
+
+                frame++;
+                requestAnimationFrame(drawConstellation);
+            }
+
+            drawConstellation();
+        }
+
+        // Handle enter key for sending messages
+        document.querySelectorAll('.input-text').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const phoneId = this.id.split('-').pop();
+                    sendMessage(phoneId);
+                }
+            });
+        });
+
+        // Initial animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate resonance bars on load
+            setTimeout(() => {
+                document.querySelectorAll('.resonance-fill').forEach(fill => {
+                    fill.style.width = '85%';
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

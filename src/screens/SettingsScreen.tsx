@@ -132,7 +132,9 @@ export function SettingsScreen() {
       'Your data will be exported to a JSON file',
       [
         {text: 'Cancel', style: 'cancel'},
-        {text: 'Export', onPress: () => console.log('Exporting data...')},
+        {text: 'Export', onPress: () => {
+          // TODO: Implement data export functionality
+        }},
       ]
     );
   };
@@ -143,7 +145,9 @@ export function SettingsScreen() {
       'This will remove all temporary data. Your conversations and memories will be preserved.',
       [
         {text: 'Cancel', style: 'cancel'},
-        {text: 'Clear', style: 'destructive', onPress: () => console.log('Cache cleared')},
+        {text: 'Clear', style: 'destructive', onPress: () => {
+          // TODO: Implement cache clearing functionality
+        }},
       ]
     );
   };
@@ -158,61 +162,59 @@ export function SettingsScreen() {
 
         {/* Model Configuration */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>MODEL CONFIGURATION</Text>
+          <Text style={styles.sectionTitle}>API CONFIGURATION</Text>
 
-          {modelConfigs.map(config => (
-            <View key={config.id} style={styles.modelConfig}>
+          {Object.entries(PROVIDERS).map(([providerName, providerConfig]) => (
+            <View key={providerName} style={styles.modelConfig}>
               <View style={styles.modelHeader}>
-                <Text style={styles.modelName}>{config.id.toUpperCase()}</Text>
+                <Text style={styles.modelName}>{providerName.toUpperCase()}</Text>
+                {apiKeys[providerName] && (
+                  <View style={styles.modelActions}>
+                    <TouchableOpacity
+                      style={styles.testButton}
+                      onPress={() => testConnection(providerName)}
+                      disabled={testingProviders[providerName]}>
+                      {testingProviders[providerName] ? (
+                        <ActivityIndicator size="small" color={colors.textSecondary} />
+                      ) : (
+                        <>
+                          <Icon name="zap" size={14} color={colors.textSecondary} />
+                          <Text style={styles.testButtonText}>Test</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.removeButton}
+                      onPress={() => removeApiKey(providerName)}>
+                      <Icon name="trash-2" size={14} color={colors.error} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.apiKeyRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder={`Enter ${providerName} API Key`}
+                  placeholderTextColor={colors.textQuaternary}
+                  value={apiKeys[providerName] || ''}
+                  onChangeText={(value) => setApiKeys(prev => ({...prev, [providerName]: value}))}
+                  secureTextEntry={apiKeys[providerName] === '••••••••••••••••'}
+                  keyboardAppearance="dark"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
                 <TouchableOpacity
-                  style={styles.testButton}
-                  onPress={() => testConnection(config.id)}>
-                  <Icon name="zap" size={14} color={colors.textSecondary} />
-                  <Text style={styles.testButtonText}>Test</Text>
+                  style={styles.saveButton}
+                  onPress={() => saveApiKey(providerName, apiKeys[providerName] || '')}>
+                  <Icon name="save" size={14} color={colors.textPrimary} />
+                  <Text style={styles.saveButtonText}>Save</Text>
                 </TouchableOpacity>
               </View>
 
-              <TextInput
-                style={styles.input}
-                placeholder="API Key"
-                placeholderTextColor={colors.textQuaternary}
-                value={config.apiKey}
-                onChangeText={(value) => updateModelConfig(config.id, 'apiKey', value)}
-                secureTextEntry
-                keyboardAppearance="dark"
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Endpoint URL"
-                placeholderTextColor={colors.textQuaternary}
-                value={config.endpoint}
-                onChangeText={(value) => updateModelConfig(config.id, 'endpoint', value)}
-                keyboardAppearance="dark"
-              />
-
-              <View style={styles.paramRow}>
-                <View style={styles.paramItem}>
-                  <Text style={styles.paramLabel}>Max Tokens</Text>
-                  <TextInput
-                    style={styles.paramInput}
-                    value={config.maxTokens.toString()}
-                    onChangeText={(value) => updateModelConfig(config.id, 'maxTokens', parseInt(value) || 0)}
-                    keyboardType="numeric"
-                    keyboardAppearance="dark"
-                  />
-                </View>
-                <View style={styles.paramItem}>
-                  <Text style={styles.paramLabel}>Temperature</Text>
-                  <TextInput
-                    style={styles.paramInput}
-                    value={config.temperature.toString()}
-                    onChangeText={(value) => updateModelConfig(config.id, 'temperature', parseFloat(value) || 0)}
-                    keyboardType="decimal-pad"
-                    keyboardAppearance="dark"
-                  />
-                </View>
-              </View>
+              {providerConfig.info && (
+                <Text style={styles.providerInfo}>{providerConfig.info}</Text>
+              )}
             </View>
           ))}
         </View>

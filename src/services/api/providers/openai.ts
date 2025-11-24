@@ -18,6 +18,9 @@ export class OpenAIProvider extends BaseAPIProvider {
       models: [
         'gpt-5.1',
         'gpt-5.1-thinking',
+        'gpt-5.1-chat-latest',
+        'gpt-5.1-codex',
+        'gpt-5.1-chat',
         'gpt-5.1-mini',
         'gpt-5.1-nano',
         'gpt-5',
@@ -75,6 +78,12 @@ export class OpenAIProvider extends BaseAPIProvider {
     model: AIModel,
     options?: Partial<ChatCompletionRequest>
   ): Promise<any> {
+    console.log('[OpenAI] Creating chat completion:', {
+      model: model.id,
+      messageCount: messages.length,
+      options: options,
+    });
+
     // o1 models don't support temperature, top_p, etc.
     if (model.id.startsWith('o1-')) {
       const filteredOptions = {
@@ -89,28 +98,83 @@ export class OpenAIProvider extends BaseAPIProvider {
 
     // GPT-5.1 models (including thinking variants)
     if (model.id.startsWith('gpt-5.1')) {
-      const gpt51Options = {
-        ...options,
+      // Convert max_tokens to max_completion_tokens for GPT-5.1
+      // Must completely remove max_tokens from options to prevent base class from using it
+      const { max_tokens, ...restOptions } = options || {};
+      const gpt51Options: any = {
+        ...restOptions,
+        max_completion_tokens: max_tokens || 4096,
         // GPT-5.1 reasoning effort: 'none' (default), 'low', 'medium', 'high'
         // Default is 'none' for latency-sensitive workloads
         // Use 'low'/'medium' for complex tasks, 'high' when intelligence > speed
         reasoning_effort: options?.reasoning_effort || 'none',
       };
+      // Explicitly delete max_tokens to prevent base class from adding it back
+      delete gpt51Options.max_tokens;
       return super.createChatCompletion(messages, model, gpt51Options);
     }
 
     // GPT-5 models (non-5.1, including thinking variants)
     if (model.id.startsWith('gpt-5')) {
-      const gpt5Options = {
-        ...options,
+      // Convert max_tokens to max_completion_tokens for GPT-5
+      // Must completely remove max_tokens from options to prevent base class from using it
+      const { max_tokens, ...restOptions } = options || {};
+      const gpt5Options: any = {
+        ...restOptions,
+        max_completion_tokens: max_tokens || 4096,
         // GPT-5 reasoning effort: 'minimal' or 'medium' (default)
         // 'minimal' for latency optimization, 'medium' for balanced reasoning
         reasoning_effort: options?.reasoning_effort || 'medium',
       };
+      // Explicitly delete max_tokens to prevent base class from adding it back
+      delete gpt5Options.max_tokens;
       return super.createChatCompletion(messages, model, gpt5Options);
     }
 
-    return super.createChatCompletion(messages, model, options);
+    // For other models (GPT-4, GPT-3.5, o1), remove unsupported parameters
+    const { reasoning_effort, ...filteredOptions } = options || {};
+    return super.createChatCompletion(messages, model, filteredOptions);
+  }
+
+  /**
+   * Override for streaming with GPT-5 models
+   */
+  async *createStreamingChatCompletion(
+    messages: Message[],
+    model: AIModel,
+    options?: Partial<ChatCompletionRequest>
+  ): AsyncGenerator<string, void, unknown> {
+    // GPT-5.1 models need max_completion_tokens instead of max_tokens
+    if (model.id.startsWith('gpt-5.1')) {
+      const { max_tokens, ...restOptions } = options || {};
+      const gpt51Options: any = {
+        ...restOptions,
+        max_completion_tokens: max_tokens || 4096,
+        reasoning_effort: options?.reasoning_effort || 'none',
+      };
+      // Explicitly delete max_tokens to prevent base class from adding it back
+      delete gpt51Options.max_tokens;
+      yield* super.createStreamingChatCompletion(messages, model, gpt51Options);
+      return;
+    }
+
+    // GPT-5 models also need max_completion_tokens
+    if (model.id.startsWith('gpt-5')) {
+      const { max_tokens, ...restOptions } = options || {};
+      const gpt5Options: any = {
+        ...restOptions,
+        max_completion_tokens: max_tokens || 4096,
+        reasoning_effort: options?.reasoning_effort || 'medium',
+      };
+      // Explicitly delete max_tokens to prevent base class from adding it back
+      delete gpt5Options.max_tokens;
+      yield* super.createStreamingChatCompletion(messages, model, gpt5Options);
+      return;
+    }
+
+    // For other models (GPT-4, GPT-3.5, o1), remove unsupported parameters
+    const { reasoning_effort, ...filteredOptions } = options || {};
+    yield* super.createStreamingChatCompletion(messages, model, filteredOptions);
   }
 
   /**
@@ -121,7 +185,6 @@ export class OpenAIProvider extends BaseAPIProvider {
       const response = await this.makeRequest('/models');
       return response && response.data && Array.isArray(response.data);
     } catch (error) {
-      console.error('OpenAI connection test failed:', error);
       return false;
     }
   }

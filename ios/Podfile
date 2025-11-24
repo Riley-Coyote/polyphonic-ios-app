@@ -1,0 +1,53 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '13.4'
+prepare_react_native_project!
+
+# Force using CDN instead of trunk
+source 'https://cdn.cocoapods.org/'
+
+target 'PolyphonicIOS' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # Disable Flipper to avoid boost issues
+    :flipper_configuration => FlipperConfiguration.disabled,
+    :hermes_enabled => false,
+    :fabric_enabled => false,
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  target 'PolyphonicIOSTests' do
+    inherit! :complete
+  end
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+
+    # Fix deployment targets and C++ issues
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Ensure minimum iOS deployment target
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+
+        # Fix C++ language standard
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+
+        # Disable warnings for deprecated methods
+        config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
+      end
+    end
+
+    # Fix RCT-Folly Time.h issue
+    time_h = "#{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h"
+    if File.exist?(time_h)
+      `sed -i '' 's/typedef uint8_t clockid_t;//g' "#{time_h}"`
+    end
+  end
+end

@@ -4,6 +4,11 @@
 
 import { OpenAIProvider } from './providers/openai';
 import { AnthropicProvider } from './providers/anthropic';
+import { GoogleProvider } from './providers/google';
+import { DeepSeekProvider } from './providers/deepseek';
+import { MoonshotProvider } from './providers/moonshot';
+import { MetaProvider } from './providers/meta';
+import { XAIProvider } from './providers/xai';
 import { APIProvider, Message, ChatCompletionResponse } from './types';
 import { AIModel } from '../../constants/aiModels';
 import { apiKeyManager } from '../security/apiKeyManager';
@@ -12,11 +17,11 @@ import { apiKeyManager } from '../security/apiKeyManager';
 const providers: Record<string, APIProvider> = {
   openai: new OpenAIProvider(),
   anthropic: new AnthropicProvider(),
-  // Add more providers here as they're implemented
-  // google: new GoogleProvider(),
-  // moonshot: new MoonshotProvider(),
-  // mistral: new MistralProvider(),
-  // meta: new MetaProvider(),
+  google: new GoogleProvider(),
+  deepseek: new DeepSeekProvider(),
+  moonshot: new MoonshotProvider(),
+  meta: new MetaProvider(),
+  xai: new XAIProvider(),
 };
 
 export interface AIServiceOptions {
@@ -96,8 +101,12 @@ class AIService {
         } : undefined,
       };
     } catch (error: any) {
-      console.error(`Error sending message to ${model.name}:`, error);
-
+      console.error('[AIService] Send message error:', {
+        provider: model.provider,
+        model: model.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       return {
         content: '',
         model: model.id,
@@ -195,21 +204,18 @@ class AIService {
     const provider = providers[providerName.toLowerCase()];
 
     if (!provider) {
-      console.error(`Provider ${providerName} not found`);
       return false;
     }
 
     // Check if API key exists
     const hasKey = await apiKeyManager.hasAPIKey(providerName.toLowerCase());
     if (!hasKey) {
-      console.error(`No API key for ${providerName}`);
       return false;
     }
 
     try {
       return await provider.testConnection();
     } catch (error) {
-      console.error(`Connection test failed for ${providerName}:`, error);
       return false;
     }
   }
